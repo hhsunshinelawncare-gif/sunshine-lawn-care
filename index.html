@@ -214,6 +214,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
 .quote-form input, .quote-form select, .quote-form textarea { width: 100%; border: 1px solid #d8ddd9; border-radius: 6px; padding: 13px 14px; background: #fbfcf9; color: var(--ink); font-size: 14px; text-transform: none; letter-spacing: 0; outline: none; transition: border 160ms ease, box-shadow 160ms ease; }
 .quote-form input:focus, .quote-form select:focus, .quote-form textarea:focus { border-color: var(--forest-700); box-shadow: 0 0 0 3px rgba(11,87,48,.1); }
 .quote-form textarea { resize: vertical; min-height: 92px; }
+.form-trap { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
 .form-button { width: 100%; margin-top: 3px; border-color: var(--forest-950); background: var(--forest-950); color: white; box-shadow: none; }
 .form-button:hover { background: var(--forest-800); }
 .form-status { min-height: 22px; margin: 10px 0 0; color: var(--forest-700); font-size: 12px; text-align: center; }
@@ -300,6 +301,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
 }
 
 </style>
+    
     
   </head>
   <body>
@@ -495,6 +497,19 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
               <label>Phone<input type="tel" name="phone" autocomplete="tel" placeholder="(555) 555-5555" required /></label>
               <label>Email<input type="email" name="email" autocomplete="email" placeholder="you@example.com" required /></label>
             </div>
+            <label>Service address<input type="text" name="address" autocomplete="street-address" placeholder="Street address" maxlength="180" required /></label>
+            <div class="field-row">
+              <label>Preferred service date<input type="date" name="requestedDate" required /></label>
+              <label>Best time to reach you
+                <select name="preferredTime" required>
+                  <option value="" selected disabled>Select a time</option>
+                  <option>Morning</option>
+                  <option>Afternoon</option>
+                  <option>Evening</option>
+                  <option>Any time</option>
+                </select>
+              </label>
+            </div>
             <label>What can we help with?
               <select name="service" required>
                 <option value="" selected disabled>Select a service</option>
@@ -505,6 +520,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
               </select>
             </label>
             <label>Property notes<textarea name="notes" rows="3" placeholder="Tell us a little about your lawn"></textarea></label>
+            <label class="form-trap" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
             <button class="button form-button" type="submit">Request my free estimate <span aria-hidden="true">&#8594;</span></button>
             <p class="form-status" role="status" aria-live="polite" data-form-status></p>
           </form>
@@ -527,6 +543,11 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
       </div>
     </footer>
   <script>
+window.REQUEST_CONFIG = {
+  supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
+  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
+};
+
 const header = document.querySelector("[data-header]");
 const menuButton = document.querySelector(".menu-toggle");
 const nav = document.querySelector(".site-nav");
@@ -565,9 +586,66 @@ const revealObserver = new IntersectionObserver(
 
 document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
 
-form.addEventListener("submit", (event) => {
+const requestConfig = window.REQUEST_CONFIG || {};
+const requestedDate = form.querySelector("[name=requestedDate]");
+
+const today = new Date();
+today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+requestedDate.min = today.toISOString().slice(0, 10);
+
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  formStatus.textContent = "Thanks! Your request has been captured in this preview.";
+
+  if (form.elements.website.value) return;
+
+  const submitButton = form.querySelector("button[type=submit]");
+  const originalLabel = submitButton.innerHTML;
+  submitButton.disabled = true;
+  submitButton.textContent = "Sending request...";
+  formStatus.textContent = "";
+
+  if (!requestConfig.supabaseUrl || !requestConfig.supabaseAnonKey) {
+    formStatus.textContent = "Online requests are being connected. Please try again shortly.";
+    submitButton.disabled = false;
+    submitButton.innerHTML = originalLabel;
+    return;
+  }
+
+  const data = new FormData(form);
+  const request = {
+    first_name: String(data.get("firstName")).trim(),
+    last_name: String(data.get("lastName")).trim(),
+    phone: String(data.get("phone")).trim(),
+    email: String(data.get("email")).trim(),
+    address: String(data.get("address")).trim(),
+    requested_date: String(data.get("requestedDate")),
+    preferred_time: String(data.get("preferredTime")),
+    service: String(data.get("service")),
+    notes: String(data.get("notes")).trim()
+  };
+
+  try {
+    const response = await fetch(`${requestConfig.supabaseUrl}/rest/v1/service_requests`, {
+      method: "POST",
+      headers: {
+        apikey: requestConfig.supabaseAnonKey,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal"
+      },
+      body: JSON.stringify(request)
+    });
+
+    if (!response.ok) throw new Error("Request could not be saved");
+
+    form.reset();
+    requestedDate.min = today.toISOString().slice(0, 10);
+    formStatus.textContent = "Thank you! Your request is on our calendar for review.";
+  } catch (error) {
+    formStatus.textContent = "We could not send your request. Please try again.";
+  } finally {
+    submitButton.disabled = false;
+    submitButton.innerHTML = originalLabel;
+  }
 });
 
 </script>
