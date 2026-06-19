@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Sunshine Service Calendar</title>
+    <style>
+:root {
+  --green-950: #031c11;
+  --green-900: #042918;
+  --green-800: #074326;
+  --green-700: #0b5d33;
+  --sun: #ffc400;
+  --cream: #f5f3e9;
+  --paper: #fffef9;
+  --ink: #142119;
+  --muted: #6d776f;
+  --line: #dde2dd;
+  --blue: #4676d7;
+  --red: #b74949;
+  --shadow: 0 24px 80px rgba(4, 41, 24, 0.16);
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+body { margin: 0; min-width: 320px; min-height: 100vh; color: var(--ink); background: var(--cream); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+button, input, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.eyebrow { margin: 0 0 7px; color: var(--green-700); font-size: 10px; font-weight: 900; letter-spacing: 1.8px; text-transform: uppercase; }
+.brand-mark { width: 44px; aspect-ratio: 1; display: grid; place-items: center; flex: none; border-radius: 50%; color: var(--green-950); background: var(--sun); box-shadow: 0 0 0 4px rgba(255,196,0,.14); font-family: Georgia, serif; font-weight: 900; letter-spacing: -2px; }
+
+.loading-screen { position: fixed; z-index: 100; inset: 0; display: grid; place-content: center; justify-items: center; color: white; background: var(--green-950); }
+.loading-screen p { color: rgba(255,255,255,.62); font-size: 13px; }
+.loading-sun { width: 60px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; color: var(--green-950); background: var(--sun); font-family: Georgia, serif; font-weight: 900; animation: pulse 1s ease-in-out infinite alternate; }
+@keyframes pulse { to { transform: scale(1.08); box-shadow: 0 0 45px rgba(255,196,0,.25); } }
+
+.login-page { min-height: 100vh; display: grid; grid-template-columns: minmax(420px, .86fr) 1.14fr; background: var(--paper); }
+.login-panel { display: flex; flex-direction: column; justify-content: center; width: min(100%, 590px); padding: 70px clamp(34px, 6vw, 90px); }
+.login-brand, .sidebar-brand { display: flex; align-items: center; gap: 13px; }
+.login-brand > span:last-child, .sidebar-brand > span:last-child { display: flex; flex-direction: column; line-height: 1; text-transform: uppercase; }
+.login-brand strong, .sidebar-brand strong { color: var(--green-900); font-family: Impact, "Arial Narrow Bold", sans-serif; font-size: 24px; font-style: italic; }
+.login-brand small, .sidebar-brand small { margin-top: 5px; color: var(--green-700); font-size: 9px; font-weight: 900; letter-spacing: 2.4px; }
+.login-copy { margin: 70px 0 36px; }
+.login-copy h1 { max-width: 520px; margin: 0; font-family: Georgia, serif; font-size: clamp(43px, 4.6vw, 68px); line-height: 1; letter-spacing: -2.4px; }
+.login-copy > p:last-child { max-width: 480px; margin: 24px 0 0; color: var(--muted); line-height: 1.75; }
+.login-form { display: grid; gap: 16px; }
+.login-form label { display: grid; gap: 7px; color: #39463e; font-size: 11px; font-weight: 850; letter-spacing: .6px; text-transform: uppercase; }
+.login-form input { width: 100%; min-height: 50px; padding: 0 14px; border: 1px solid var(--line); border-radius: 7px; outline: none; background: #fbfcf8; font-size: 14px; text-transform: none; transition: border 160ms ease, box-shadow 160ms ease; }
+.login-form input:focus { border-color: var(--green-700); box-shadow: 0 0 0 3px rgba(11,93,51,.1); }
+.primary-button { min-height: 52px; border: 0; border-radius: 7px; color: white; background: var(--green-900); font-size: 12px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+.primary-button:disabled { opacity: .6; cursor: wait; }
+.form-message { min-height: 20px; margin: 0; color: var(--red); font-size: 12px; }
+.setup-message { margin: 0 0 5px; padding: 13px 15px; border-radius: 7px; color: var(--green-800); background: #edf6ef; font-size: 12px; line-height: 1.55; }
+.privacy-note { display: flex; gap: 8px; align-items: center; margin: 24px 0 0; color: #8a928d; font-size: 11px; }
+.demo-button { padding: 11px; border: 1px dashed #c9d0cb; border-radius: 7px; color: var(--green-700); background: transparent; font-weight: 800; }
+.login-art { position: relative; display: grid; place-items: center; overflow: hidden; background: radial-gradient(circle at 70% 20%, #187542, transparent 33%), linear-gradient(140deg, var(--green-950), var(--green-700)); }
+.login-art::before { content: ""; position: absolute; inset: 0; opacity: .12; background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px); background-size: 65px 65px; }
+.art-orbit { position: absolute; border: 1px solid rgba(255,196,0,.22); border-radius: 50%; }
+.orbit-one { width: 550px; height: 550px; right: -170px; top: -160px; }
+.orbit-two { width: 360px; height: 360px; left: -150px; bottom: -110px; }
+.art-calendar { position: relative; z-index: 2; width: min(65%, 580px); padding: 30px; border: 1px solid rgba(255,255,255,.18); border-radius: 24px; background: rgba(255,255,255,.12); box-shadow: 0 35px 90px rgba(0,0,0,.25); backdrop-filter: blur(14px); transform: rotate(-3deg); }
+.art-calendar-head { display: flex; align-items: center; gap: 9px; padding-bottom: 24px; color: white; }
+.art-calendar-head span { width: 9px; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.35); }
+.art-calendar-head strong { margin-left: auto; color: var(--sun); font-size: 12px; letter-spacing: 3px; }
+.art-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.art-calendar-grid i { aspect-ratio: 1; border-radius: 6px; background: rgba(255,255,255,.1); }
+.art-calendar-grid i.job { background: rgba(255,196,0,.85); box-shadow: 0 8px 18px rgba(255,196,0,.17); }
+.art-calendar-grid i.today { border: 2px solid white; }
+
+.app-shell { min-height: 100vh; display: grid; grid-template-columns: 238px 1fr; }
+.sidebar { position: fixed; z-index: 20; inset: 0 auto 0 0; width: 238px; display: flex; flex-direction: column; padding: 30px 20px 22px; color: white; background: var(--green-950); }
+.sidebar-brand { padding: 0 8px 32px; }
+.sidebar-brand strong { color: white; }
+.sidebar-brand small { color: var(--sun); }
+.sidebar nav { display: grid; gap: 7px; }
+.nav-link { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 13px; border-radius: 8px; color: rgba(255,255,255,.58); font-size: 13px; font-weight: 750; text-decoration: none; }
+.nav-link.active, .nav-link:hover { color: white; background: rgba(255,255,255,.09); }
+.nav-icon { width: 20px; color: var(--sun); font-size: 18px; text-align: center; }
+.nav-link b { min-width: 22px; margin-left: auto; padding: 3px 6px; border-radius: 20px; color: var(--green-950); background: var(--sun); font-size: 10px; text-align: center; }
+.sidebar-filter { display: grid; gap: 8px; margin-top: 34px; padding: 19px 11px; border-top: 1px solid rgba(255,255,255,.1); }
+.sidebar-filter label { color: rgba(255,255,255,.4); font-size: 9px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; }
+.sidebar-filter select { width: 100%; padding: 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 7px; color: white; background: #0a3521; font-size: 12px; outline: none; }
+.sidebar-bottom { display: grid; gap: 13px; margin-top: auto; }
+.owner-card { display: flex; align-items: center; gap: 10px; padding: 12px 9px; border-top: 1px solid rgba(255,255,255,.1); }
+.owner-card > span { width: 35px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; color: var(--green-950); background: var(--sun); font-size: 11px; font-weight: 900; }
+.owner-card p { display: flex; flex-direction: column; margin: 0; line-height: 1.3; }
+.owner-card strong { font-size: 12px; }
+.owner-card small { color: rgba(255,255,255,.4); font-size: 9px; }
+.logout-button { padding: 8px; border: 0; color: rgba(255,255,255,.46); background: transparent; font-size: 11px; text-align: left; }
+
+.dashboard-main { grid-column: 2; min-width: 0; padding: 34px clamp(24px, 3.5vw, 58px) 60px; }
+.topbar { display: flex; align-items: end; justify-content: space-between; gap: 30px; }
+.topbar h1 { margin: 0; font-family: Georgia, serif; font-size: 38px; line-height: 1; letter-spacing: -1.3px; }
+.topbar-actions { display: flex; gap: 10px; align-items: center; }
+.search-box input { width: 220px; min-height: 42px; padding: 0 15px 0 38px; border: 1px solid var(--line); border-radius: 7px; outline: none; background: var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2377847b' stroke-width='2'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='m11 11 4 4'/%3E%3C/svg%3E") no-repeat 13px center; font-size: 12px; }
+.today-button { min-height: 42px; padding: 0 17px; border: 0; border-radius: 7px; color: white; background: var(--green-800); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .6px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin: 32px 0 18px; }
+.stats-grid article { display: flex; align-items: center; gap: 13px; min-height: 86px; padding: 17px 19px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
+.stat-icon { width: 34px; aspect-ratio: 1; border-radius: 10px; }
+.new-dot { background: #fff2bc; box-shadow: inset 0 0 0 10px var(--sun); }
+.scheduled-dot { background: #dfe8ff; box-shadow: inset 0 0 0 10px var(--blue); }
+.month-dot { background: #dff1e6; box-shadow: inset 0 0 0 10px var(--green-700); }
+.done-dot { background: #e5e8e6; box-shadow: inset 0 0 0 10px #76837b; }
+.stats-grid p { display: flex; flex-direction: column; margin: 0; }
+.stats-grid small { color: var(--muted); font-size: 10px; font-weight: 750; }
+.stats-grid strong { margin-top: 2px; font-family: Georgia, serif; font-size: 25px; }
+.calendar-card { overflow: hidden; border: 1px solid var(--line); border-radius: 11px; background: var(--paper); box-shadow: 0 15px 45px rgba(4,41,24,.06); }
+.calendar-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 23px 25px; border-bottom: 1px solid var(--line); }
+.calendar-toolbar h2 { margin: 0; font-family: Georgia, serif; font-size: 24px; }
+.calendar-toolbar p { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+.calendar-controls { display: flex; gap: 6px; }
+.calendar-controls button { width: 38px; aspect-ratio: 1; border: 1px solid var(--line); border-radius: 7px; color: var(--green-800); background: white; font-weight: 900; }
+.weekday-row, .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.weekday-row { border-bottom: 1px solid var(--line); background: #fafbf7; }
+.weekday-row span { padding: 11px 8px; color: #8a938d; font-size: 9px; font-weight: 900; letter-spacing: 1.2px; text-align: center; text-transform: uppercase; }
+.day-cell { position: relative; min-height: 130px; padding: 9px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: white; }
+.day-cell:nth-child(7n) { border-right: 0; }
+.day-cell:nth-last-child(-n+7) { border-bottom: 0; }
+.day-cell.outside { background: #fafbf8; }
+.day-number { width: 27px; height: 27px; display: grid; place-items: center; margin-bottom: 4px; border-radius: 50%; color: #647068; font-size: 11px; font-weight: 800; }
+.outside .day-number { color: #b8bfba; }
+.day-cell.today .day-number { color: var(--green-950); background: var(--sun); }
+.day-events { display: grid; gap: 4px; }
+.event-card { width: 100%; padding: 6px 7px; overflow: hidden; border: 0; border-left: 3px solid; border-radius: 4px; background: #f1f4f1; text-align: left; }
+.event-card strong, .event-card span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.event-card strong { color: #25352b; font-size: 9px; }
+.event-card span { margin-top: 1px; color: #6f7a73; font-size: 8px; }
+.event-card.status-new { border-color: var(--sun); background: #fffae7; }
+.event-card.status-scheduled { border-color: var(--blue); background: #f0f4ff; }
+.event-card.status-completed { border-color: #6c8978; opacity: .72; }
+.event-card.status-cancelled { border-color: var(--red); opacity: .55; }
+.more-events { padding-left: 7px; color: var(--green-700); font-size: 8px; font-weight: 850; }
+.empty-state { grid-column: 1 / -1; padding: 80px 20px; color: var(--muted); text-align: center; }
+
+.request-drawer { position: fixed; z-index: 50; top: 0; right: 0; bottom: 0; width: min(430px, 100%); overflow-y: auto; background: var(--paper); box-shadow: -22px 0 70px rgba(0,0,0,.2); transform: translateX(105%); transition: transform 230ms ease; }
+.request-drawer.open { transform: translateX(0); }
+.request-drawer > header { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; padding: 27px 28px 20px; border-bottom: 1px solid var(--line); background: rgba(255,254,249,.96); backdrop-filter: blur(10px); }
+.request-drawer h2 { margin: 0; font-family: Georgia, serif; font-size: 26px; }
+.request-drawer header button { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 50%; background: white; font-size: 22px; }
+.drawer-body { padding: 24px 28px 40px; }
+.detail-status-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 26px; }
+.detail-status-row time { color: var(--muted); font-size: 10px; }
+.status-pill { padding: 5px 9px; border-radius: 20px; color: var(--green-950); background: #fff0ab; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: .6px; }
+.detail-section { padding: 21px 0; border-top: 1px solid var(--line); }
+.detail-section h3, .detail-section > label { display: block; margin: 0 0 13px; color: #7c877f; font-size: 9px; font-weight: 900; letter-spacing: 1.3px; text-transform: uppercase; }
+.detail-highlight { display: flex; align-items: center; gap: 13px; padding: 15px; border-radius: 8px; background: #f2f5ef; }
+.detail-date-icon { width: 36px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px; color: var(--green-950); background: var(--sun); }
+.detail-highlight p { display: flex; flex-direction: column; margin: 0; }
+.detail-highlight strong { font-family: Georgia, serif; font-size: 17px; }
+.detail-highlight small { margin-top: 2px; color: var(--muted); }
+.detail-section dl { display: grid; gap: 15px; margin: 0; }
+.detail-section dl div { display: grid; grid-template-columns: 70px 1fr; gap: 12px; }
+.detail-section dt { color: #929b95; font-size: 10px; }
+.detail-section dd { margin: 0; font-size: 12px; font-weight: 700; word-break: break-word; }
+.detail-section dd a { color: var(--green-700); }
+.detail-notes { margin: 0; color: #4f5e55; font-size: 13px; line-height: 1.65; }
+.detail-section select { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 7px; background: white; outline: none; }
+.drawer-backdrop { position: fixed; z-index: 40; inset: 0; border: 0; background: rgba(2,24,14,.5); }
+.toast { position: fixed; z-index: 100; left: 50%; bottom: 28px; padding: 11px 18px; border-radius: 7px; color: white; background: var(--green-950); box-shadow: var(--shadow); font-size: 12px; transform: translate(-50%, 25px); opacity: 0; pointer-events: none; transition: opacity 180ms ease, transform 180ms ease; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (max-width: 1050px) {
+  .login-page { grid-template-columns: 1fr; }
+  .login-panel { margin-inline: auto; }
+  .login-art { display: none; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .day-cell { min-height: 110px; }
+}
+
+@media (max-width: 760px) {
+  .app-shell { display: block; }
+  .sidebar { position: sticky; width: 100%; height: auto; display: flex; flex-direction: row; align-items: center; padding: 12px 16px; }
+  .sidebar-brand .brand-mark { width: 36px; }
+  .sidebar-brand strong { font-size: 19px; }
+  .sidebar-brand { padding: 0; }
+  .sidebar nav { display: flex; margin-left: auto; }
+  .sidebar .nav-link { min-height: 38px; padding: 0 10px; font-size: 0; }
+  .nav-icon { font-size: 18px; }
+  .sidebar-filter, .sidebar-bottom { display: none; }
+  .dashboard-main { padding: 26px 15px 45px; }
+  .topbar { align-items: start; flex-direction: column; }
+  .topbar-actions { width: 100%; }
+  .search-box { flex: 1; }
+  .search-box input { width: 100%; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid article { min-height: 74px; padding: 12px; }
+  .weekday-row span { font-size: 8px; letter-spacing: 0; }
+  .calendar-card { overflow-x: auto; }
+  .weekday-row, .calendar-grid, .calendar-toolbar { min-width: 680px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+</style>
+    
+    
+  </head>
+  <body>
+    <div class="loading-screen" data-loading>
+      <span class="loading-sun">HH</span>
+      <p>Opening your calendar...</p>
+    </div>
+
+    <main class="login-page" data-login hidden>
+      <section class="login-panel">
+        <div class="login-brand">
+          <span class="brand-mark">HH</span>
+          <span><strong>Sunshine</strong><small>Service Calendar</small></span>
+        </div>
+        <div class="login-copy">
+          <p class="eyebrow">Private operations</p>
+          <h1>Your lawn-care schedule, all in one place.</h1>
+          <p>Sign in to review new requests, customer details, preferred dates, and job status.</p>
+        </div>
+        <form class="login-form" data-login-form>
+          <label>Email address<input type="email" name="email" autocomplete="username" placeholder="you@example.com" required /></label>
+          <label>Password<input type="password" name="password" autocomplete="current-password" placeholder="Your password" required /></label>
+          <button class="primary-button" type="submit">Sign in securely</button>
+          <p class="form-message" role="status" data-login-message></p>
+        </form>
+        <form class="login-form" data-password-form hidden>
+          <p class="setup-message">Your private dashboard invitation is verified. Choose the password you want to use.</p>
+          <label>New password<input type="password" name="password" autocomplete="new-password" minlength="10" placeholder="At least 10 characters" required /></label>
+          <label>Confirm password<input type="password" name="confirmation" autocomplete="new-password" minlength="10" placeholder="Enter it again" required /></label>
+          <button class="primary-button" type="submit">Set my dashboard password</button>
+          <p class="form-message" role="status" data-password-message></p>
+        </form>
+        <button class="demo-button" type="button" data-demo hidden>Preview with sample requests</button>
+        <p class="privacy-note"><span aria-hidden="true">&#128274;</span> Customer details stay behind your account login.</p>
+      </section>
+      <section class="login-art" aria-hidden="true">
+        <div class="art-orbit orbit-one"></div>
+        <div class="art-orbit orbit-two"></div>
+        <div class="art-calendar">
+          <div class="art-calendar-head"><span></span><span></span><strong>JUNE</strong></div>
+          <div class="art-calendar-grid">
+            <i></i><i></i><i></i><i class="job"></i><i></i><i></i><i></i>
+            <i></i><i class="job"></i><i></i><i></i><i></i><i class="job"></i><i></i>
+            <i></i><i></i><i></i><i class="today"></i><i></i><i></i><i></i>
+            <i></i><i class="job"></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="app-shell" data-app hidden>
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark">HH</span>
+          <span><strong>Sunshine</strong><small>Operations</small></span>
+        </div>
+        <nav aria-label="Dashboard navigation">
+          <a class="nav-link active" href="#calendar"><span class="nav-icon">&#9638;</span>Calendar</a>
+          <a class="nav-link" href="#requests"><span class="nav-icon">&#9776;</span>Requests <b data-new-badge>0</b></a>
+        </nav>
+        <div class="sidebar-filter">
+          <label for="status-filter">Show requests</label>
+          <select id="status-filter" data-status-filter>
+            <option value="all">All requests</option>
+            <option value="new">New</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="sidebar-bottom">
+          <div class="owner-card"><span data-owner-initials>HH</span><p><strong data-owner-name>Owner</strong><small>Private account</small></p></div>
+          <button class="logout-button" type="button" data-logout>Sign out</button>
+        </div>
+      </aside>
+
+      <main class="dashboard-main">
+        <header class="topbar">
+          <div><p class="eyebrow">Sunshine Lawn Care</p><h1>Service calendar</h1></div>
+          <div class="topbar-actions">
+            <label class="search-box"><span class="sr-only">Search requests</span><input type="search" placeholder="Search customers" data-search /></label>
+            <button class="today-button" type="button" data-jump-today>Today</button>
+          </div>
+        </header>
+
+        <section class="stats-grid" aria-label="Request overview">
+          <article><span class="stat-icon new-dot"></span><p><small>New requests</small><strong data-stat-new>0</strong></p></article>
+          <article><span class="stat-icon scheduled-dot"></span><p><small>Scheduled</small><strong data-stat-scheduled>0</strong></p></article>
+          <article><span class="stat-icon month-dot"></span><p><small>This month</small><strong data-stat-month>0</strong></p></article>
+          <article><span class="stat-icon done-dot"></span><p><small>Completed</small><strong data-stat-completed>0</strong></p></article>
+        </section>
+
+        <section class="calendar-card" id="calendar">
+          <header class="calendar-toolbar">
+            <div><h2 data-month-label>Month</h2><p data-calendar-summary>0 requests</p></div>
+            <div class="calendar-controls">
+              <button type="button" aria-label="Previous month" data-prev-month>&#8592;</button>
+              <button type="button" aria-label="Next month" data-next-month>&#8594;</button>
+            </div>
+          </header>
+          <div class="weekday-row" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+          <div class="calendar-grid" data-calendar-grid></div>
+        </section>
+      </main>
+
+      <aside class="request-drawer" aria-hidden="true" data-drawer>
+        <header><div><p class="eyebrow">Request details</p><h2 data-detail-service>Service request</h2></div><button type="button" aria-label="Close request details" data-close-drawer>&times;</button></header>
+        <div class="drawer-body">
+          <div class="detail-status-row"><span class="status-pill" data-detail-status>New</span><time data-detail-created></time></div>
+          <section class="detail-section"><h3>When</h3><div class="detail-highlight"><span class="detail-date-icon">&#9638;</span><p><strong data-detail-date></strong><small data-detail-time></small></p></div></section>
+          <section class="detail-section"><h3>Customer</h3><dl><div><dt>Name</dt><dd data-detail-name></dd></div><div><dt>Phone</dt><dd><a data-detail-phone></a></dd></div><div><dt>Email</dt><dd><a data-detail-email></a></dd></div><div><dt>Address</dt><dd data-detail-address></dd></div></dl></section>
+          <section class="detail-section"><h3>Property notes</h3><p class="detail-notes" data-detail-notes></p></section>
+          <section class="detail-section"><label for="request-status">Update status</label><select id="request-status" data-detail-status-select><option value="new">New request</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></section>
+        </div>
+      </aside>
+      <button class="drawer-backdrop" type="button" aria-label="Close request details" data-drawer-backdrop hidden></button>
+    </div>
+
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+  <script>
+window.DASHBOARD_CONFIG = {
+  supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
+  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
+};
+
+const config = window.DASHBOARD_CONFIG || {};
+const isConfigured = Boolean(config.supabaseUrl && config.supabaseAnonKey);
+
+const elements = {
+  loading: document.querySelector("[data-loading]"),
+  login: document.querySelector("[data-login]"),
+  app: document.querySelector("[data-app]"),
+  loginForm: document.querySelector("[data-login-form]"),
+  loginMessage: document.querySelector("[data-login-message]"),
+  passwordForm: document.querySelector("[data-password-form]"),
+  passwordMessage: document.querySelector("[data-password-message]"),
+  demo: document.querySelector("[data-demo]"),
+  logout: document.querySelector("[data-logout]"),
+  calendar: document.querySelector("[data-calendar-grid]"),
+  monthLabel: document.querySelector("[data-month-label]"),
+  calendarSummary: document.querySelector("[data-calendar-summary]"),
+  prevMonth: document.querySelector("[data-prev-month]"),
+  nextMonth: document.querySelector("[data-next-month]"),
+  jumpToday: document.querySelector("[data-jump-today]"),
+  search: document.querySelector("[data-search]"),
+  statusFilter: document.querySelector("[data-status-filter]"),
+  newBadge: document.querySelector("[data-new-badge]"),
+  statNew: document.querySelector("[data-stat-new]"),
+  statScheduled: document.querySelector("[data-stat-scheduled]"),
+  statMonth: document.querySelector("[data-stat-month]"),
+  statCompleted: document.querySelector("[data-stat-completed]"),
+  drawer: document.querySelector("[data-drawer]"),
+  drawerBackdrop: document.querySelector("[data-drawer-backdrop]"),
+  closeDrawer: document.querySelector("[data-close-drawer]"),
+  detailService: document.querySelector("[data-detail-service]"),
+  detailStatus: document.querySelector("[data-detail-status]"),
+  detailCreated: document.querySelector("[data-detail-created]"),
+  detailDate: document.querySelector("[data-detail-date]"),
+  detailTime: document.querySelector("[data-detail-time]"),
+  detailName: document.querySelector("[data-detail-name]"),
+  detailPhone: document.querySelector("[data-detail-phone]"),
+  detailEmail: document.querySelector("[data-detail-email]"),
+  detailAddress: document.querySelector("[data-detail-address]"),
+  detailNotes: document.querySelector("[data-detail-notes]"),
+  detailStatusSelect: document.querySelector("[data-detail-status-select]"),
+  ownerInitials: document.querySelector("[data-owner-initials]"),
+  ownerName: document.querySelector("[data-owner-name]"),
+  toast: document.querySelector("[data-toast]")
+};
+
+const today = new Date();
+const state = {
+  currentMonth: new Date(today.getFullYear(), today.getMonth(), 1),
+  requests: [],
+  selectedId: null,
+  accessToken: sessionStorage.getItem("sunshine_access_token") || "",
+  demoMode: false,
+  filter: "all",
+  query: ""
+};
+
+const inviteParams = new URLSearchParams(window.location.hash.slice(1));
+const inviteToken = inviteParams.get("access_token") || "";
+const inviteType = inviteParams.get("type") || "";
+
+const dateKey = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const createDemoRequests = () => {
+  const makeDate = (day) => dateKey(new Date(today.getFullYear(), today.getMonth(), day));
+  return [
+    { id: "demo-1", first_name: "Maria", last_name: "Santos", phone: "(555) 014-2044", email: "maria@example.com", address: "184 Palm View Drive", requested_date: makeDate(Math.min(5, 25)), preferred_time: "Morning", service: "Lawn mowing", notes: "Front and back yard. Gate is on the left side.", status: "new", created_at: new Date().toISOString() },
+    { id: "demo-2", first_name: "James", last_name: "Walker", phone: "(555) 011-8820", email: "james@example.com", address: "922 Lake Ridge Way", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Afternoon", service: "Edging and trimming", notes: "Please focus on the driveway edges and hedges near the porch.", status: "scheduled", created_at: new Date().toISOString() },
+    { id: "demo-3", first_name: "Alicia", last_name: "Brown", phone: "(555) 016-7781", email: "alicia@example.com", address: "47 Sunshine Court", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Any time", service: "Multiple services", notes: "Seasonal cleanup plus mowing. There are leaves behind the shed.", status: "new", created_at: new Date().toISOString() },
+    { id: "demo-4", first_name: "Robert", last_name: "Green", phone: "(555) 018-3402", email: "robert@example.com", address: "611 Gardenia Avenue", requested_date: makeDate(Math.min(19, 25)), preferred_time: "Morning", service: "Seasonal cleanup", notes: "Cleanup around the flower beds and fence line.", status: "completed", created_at: new Date().toISOString() }
+  ];
+};
+
+const apiHeaders = (authenticated = true) => {
+  const headers = {
+    apikey: config.supabaseAnonKey,
+    "Content-Type": "application/json"
+  };
+  if (authenticated && state.accessToken) headers.Authorization = `Bearer ${state.accessToken}`;
+  return headers;
+};
+
+const showLogin = () => {
+  elements.loading.hidden = true;
+  elements.app.hidden = true;
+  elements.login.hidden = false;
+  elements.loginForm.hidden = false;
+  elements.passwordForm.hidden = true;
+  elements.demo.hidden = isConfigured;
+};
+
+const showPasswordSetup = () => {
+  elements.loading.hidden = true;
+  elements.app.hidden = true;
+  elements.login.hidden = false;
+  elements.loginForm.hidden = true;
+  elements.demo.hidden = true;
+  elements.passwordForm.hidden = false;
+};
+
+const showApp = (email = "Owner") => {
+  window.scrollTo({ top: 0, behavior: "auto" });
+  elements.loading.hidden = true;
+  elements.login.hidden = true;
+  elements.app.hidden = false;
+  const localName = email.includes("@") ? email.split("@")[0] : email;
+  elements.ownerName.textContent = localName || "Owner";
+  elements.ownerInitials.textContent = (localName || "HH").slice(0, 2).toUpperCase();
+  render();
+};
+
+const verifySession = async () => {
+  if (!state.accessToken || !isConfigured) return false;
+  const response = await fetch(`${config.supabaseUrl}/auth/v1/user`, { headers: apiHeaders() });
+  if (!response.ok) return false;
+  const user = await response.json();
+  if (!(await verifyOwner())) return false;
+  await loadRequests();
+  showApp(user.email);
+  return true;
+};
+
+const verifyOwner = async () => {
+  const response = await fetch(`${config.supabaseUrl}/rest/v1/dashboard_owners?select=user_id&limit=1`, { headers: apiHeaders() });
+  if (!response.ok) return false;
+  const owners = await response.json();
+  return owners.length === 1;
+};
+
+const loadRequests = async () => {
+  const endpoint = `${config.supabaseUrl}/rest/v1/service_requests?select=*&order=requested_date.asc,created_at.asc`;
+  const response = await fetch(endpoint, { headers: apiHeaders() });
+  if (!response.ok) throw new Error("Requests could not be loaded");
+  state.requests = await response.json();
+};
+
+const filteredRequests = () => state.requests.filter((request) => {
+  const statusMatch = state.filter === "all" || request.status === state.filter;
+  const haystack = `${request.first_name} ${request.last_name} ${request.service} ${request.address}`.toLowerCase();
+  return statusMatch && haystack.includes(state.query);
+});
+
+const renderStats = () => {
+  const month = state.currentMonth.getMonth();
+  const year = state.currentMonth.getFullYear();
+  elements.statNew.textContent = state.requests.filter((request) => request.status === "new").length;
+  elements.statScheduled.textContent = state.requests.filter((request) => request.status === "scheduled").length;
+  elements.statCompleted.textContent = state.requests.filter((request) => request.status === "completed").length;
+  elements.statMonth.textContent = state.requests.filter((request) => {
+    const date = new Date(`${request.requested_date}T12:00:00`);
+    return date.getMonth() === month && date.getFullYear() === year;
+  }).length;
+  elements.newBadge.textContent = elements.statNew.textContent;
+};
+
+const renderCalendar = () => {
+  const year = state.currentMonth.getFullYear();
+  const month = state.currentMonth.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const gridStart = new Date(year, month, 1 - firstDay.getDay());
+  const visibleRequests = filteredRequests();
+  const monthRequests = visibleRequests.filter((request) => request.requested_date.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`));
+
+  elements.monthLabel.textContent = state.currentMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  elements.calendarSummary.textContent = `${monthRequests.length} ${monthRequests.length === 1 ? "request" : "requests"} this month`;
+  elements.calendar.innerHTML = "";
+
+  for (let index = 0; index < 42; index += 1) {
+    const date = new Date(gridStart);
+    date.setDate(gridStart.getDate() + index);
+    const key = dateKey(date);
+    const dayRequests = visibleRequests.filter((request) => request.requested_date === key);
+    const cell = document.createElement("div");
+    cell.className = "day-cell";
+    if (date.getMonth() !== month) cell.classList.add("outside");
+    if (key === dateKey(today)) cell.classList.add("today");
+
+    const number = document.createElement("span");
+    number.className = "day-number";
+    number.textContent = date.getDate();
+    cell.append(number);
+
+    const events = document.createElement("div");
+    events.className = "day-events";
+    dayRequests.slice(0, 3).forEach((request) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `event-card status-${request.status}`;
+      button.dataset.requestId = request.id;
+      button.innerHTML = `<strong>${request.first_name} ${request.last_name}</strong><span>${request.service}</span>`;
+      events.append(button);
+    });
+    if (dayRequests.length > 3) {
+      const more = document.createElement("span");
+      more.className = "more-events";
+      more.textContent = `+${dayRequests.length - 3} more`;
+      events.append(more);
+    }
+    cell.append(events);
+    elements.calendar.append(cell);
+  }
+};
+
+const render = () => {
+  renderStats();
+  renderCalendar();
+};
+
+const formatDate = (value) => new Date(`${value}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+const openRequest = (id) => {
+  const request = state.requests.find((item) => item.id === id);
+  if (!request) return;
+  state.selectedId = id;
+  elements.detailService.textContent = request.service;
+  elements.detailStatus.textContent = request.status;
+  elements.detailStatus.className = `status-pill status-${request.status}`;
+  elements.detailCreated.textContent = `Received ${new Date(request.created_at).toLocaleDateString()}`;
+  elements.detailDate.textContent = formatDate(request.requested_date);
+  elements.detailTime.textContent = request.preferred_time || "Time not specified";
+  elements.detailName.textContent = `${request.first_name} ${request.last_name}`;
+  elements.detailPhone.textContent = request.phone;
+  elements.detailPhone.href = `tel:${request.phone}`;
+  elements.detailEmail.textContent = request.email;
+  elements.detailEmail.href = `mailto:${request.email}`;
+  elements.detailAddress.textContent = request.address;
+  elements.detailNotes.textContent = request.notes || "No additional notes were provided.";
+  elements.detailStatusSelect.value = request.status;
+  elements.drawer.classList.add("open");
+  elements.drawer.setAttribute("aria-hidden", "false");
+  elements.drawerBackdrop.hidden = false;
+};
+
+const closeDrawer = () => {
+  elements.drawer.classList.remove("open");
+  elements.drawer.setAttribute("aria-hidden", "true");
+  elements.drawerBackdrop.hidden = true;
+  state.selectedId = null;
+};
+
+let toastTimer;
+const showToast = (message) => {
+  clearTimeout(toastTimer);
+  elements.toast.textContent = message;
+  elements.toast.classList.add("show");
+  toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 2600);
+};
+
+const updateRequestStatus = async (status) => {
+  const request = state.requests.find((item) => item.id === state.selectedId);
+  if (!request) return;
+  const previous = request.status;
+  request.status = status;
+  render();
+  openRequest(request.id);
+
+  if (!state.demoMode) {
+    const response = await fetch(`${config.supabaseUrl}/rest/v1/service_requests?id=eq.${encodeURIComponent(request.id)}`, {
+      method: "PATCH",
+      headers: { ...apiHeaders(), Prefer: "return=minimal" },
+      body: JSON.stringify({ status })
+    });
+    if (!response.ok) {
+      request.status = previous;
+      render();
+      openRequest(request.id);
+      showToast("Status could not be updated");
+      return;
+    }
+  }
+  showToast("Request status updated");
+};
+
+elements.loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  elements.loginMessage.textContent = "";
+  const button = elements.loginForm.querySelector("button[type=submit]");
+  button.disabled = true;
+  button.textContent = "Signing in...";
+  const data = new FormData(elements.loginForm);
+  const email = String(data.get("email")).trim().toLowerCase();
+  const password = String(data.get("password"));
+
+  try {
+    const response = await fetch(`${config.supabaseUrl}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: apiHeaders(false),
+      body: JSON.stringify({ email, password })
+    });
+    const session = await response.json();
+    if (!response.ok) throw new Error(session.error_description || "Sign in failed");
+    state.accessToken = session.access_token;
+    sessionStorage.setItem("sunshine_access_token", state.accessToken);
+    if (!(await verifyOwner())) throw new Error("Account is not authorized");
+    await loadRequests();
+    showApp(email);
+  } catch (error) {
+    sessionStorage.removeItem("sunshine_access_token");
+    state.accessToken = "";
+    elements.loginMessage.textContent = "Email or password is incorrect, or this account is not authorized.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Sign in securely";
+  }
+});
+
+elements.passwordForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  elements.passwordMessage.textContent = "";
+  const data = new FormData(elements.passwordForm);
+  const password = String(data.get("password"));
+  const confirmation = String(data.get("confirmation"));
+  const button = elements.passwordForm.querySelector("button[type=submit]");
+
+  if (password !== confirmation) {
+    elements.passwordMessage.textContent = "The passwords do not match.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Saving password...";
+  try {
+    const response = await fetch(`${config.supabaseUrl}/auth/v1/user`, {
+      method: "PUT",
+      headers: {
+        apikey: config.supabaseAnonKey,
+        Authorization: `Bearer ${inviteToken}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ password })
+    });
+    if (!response.ok) throw new Error("Password could not be saved");
+    state.accessToken = inviteToken;
+    sessionStorage.setItem("sunshine_access_token", state.accessToken);
+    window.history.replaceState({}, document.title, window.location.pathname);
+    if (!(await verifyOwner())) throw new Error("Account is not authorized");
+    await loadRequests();
+    const user = await (await fetch(`${config.supabaseUrl}/auth/v1/user`, { headers: apiHeaders() })).json();
+    showApp(user.email || "Owner");
+  } catch (error) {
+    elements.passwordMessage.textContent = "This invitation has expired or could not be completed.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Set my dashboard password";
+  }
+});
+
+elements.demo.addEventListener("click", () => {
+  state.demoMode = true;
+  state.requests = createDemoRequests();
+  showApp("Preview Owner");
+});
+
+elements.logout.addEventListener("click", async () => {
+  if (state.accessToken && isConfigured) {
+    await fetch(`${config.supabaseUrl}/auth/v1/logout`, { method: "POST", headers: apiHeaders() }).catch(() => {});
+  }
+  sessionStorage.removeItem("sunshine_access_token");
+  state.accessToken = "";
+  state.demoMode = false;
+  state.requests = [];
+  closeDrawer();
+  showLogin();
+});
+
+elements.prevMonth.addEventListener("click", () => { state.currentMonth.setMonth(state.currentMonth.getMonth() - 1); render(); });
+elements.nextMonth.addEventListener("click", () => { state.currentMonth.setMonth(state.currentMonth.getMonth() + 1); render(); });
+elements.jumpToday.addEventListener("click", () => { state.currentMonth = new Date(today.getFullYear(), today.getMonth(), 1); render(); });
+elements.statusFilter.addEventListener("change", () => { state.filter = elements.statusFilter.value; renderCalendar(); });
+elements.search.addEventListener("input", () => { state.query = elements.search.value.trim().toLowerCase(); renderCalendar(); });
+elements.calendar.addEventListener("click", (event) => { const card = event.target.closest("[data-request-id]"); if (card) openRequest(card.dataset.requestId); });
+elements.closeDrawer.addEventListener("click", closeDrawer);
+elements.drawerBackdrop.addEventListener("click", closeDrawer);
+elements.detailStatusSelect.addEventListener("change", () => updateRequestStatus(elements.detailStatusSelect.value));
+document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDrawer(); });
+
+(async () => {
+  if (!isConfigured) {
+    showLogin();
+    return;
+  }
+  if (inviteToken && ["invite", "recovery"].includes(inviteType)) {
+    showPasswordSetup();
+    return;
+  }
+  try {
+    if (await verifySession()) return;
+  } catch (error) {
+    sessionStorage.removeItem("sunshine_access_token");
+  }
+  showLogin();
+})();
+
+</script>
+</body>
+</html>
