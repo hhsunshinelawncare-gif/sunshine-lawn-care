@@ -300,51 +300,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
 }
 
 </style>
-    <script defer>
-const header = document.querySelector("[data-header]");
-const menuButton = document.querySelector(".menu-toggle");
-const nav = document.querySelector(".site-nav");
-const form = document.querySelector("[data-quote-form]");
-const formStatus = document.querySelector("[data-form-status]");
-
-document.querySelector("[data-year]").textContent = new Date().getFullYear();
-
-const syncHeader = () => header.classList.toggle("scrolled", window.scrollY > 24);
-syncHeader();
-window.addEventListener("scroll", syncHeader, { passive: true });
-
-menuButton.addEventListener("click", () => {
-  const isOpen = menuButton.getAttribute("aria-expanded") === "true";
-  menuButton.setAttribute("aria-expanded", String(!isOpen));
-  nav.classList.toggle("open", !isOpen);
-});
-
-nav.addEventListener("click", (event) => {
-  if (!event.target.closest("a")) return;
-  menuButton.setAttribute("aria-expanded", "false");
-  nav.classList.remove("open");
-});
-
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.12 }
-);
-
-document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
-
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  formStatus.textContent = "Thanks! Your request has been captured in this preview.";
-});
-
-</script>
+    
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -570,5 +526,50 @@ form.addEventListener("submit", (event) => {
         <p>Fresh lawns. Brighter days.</p>
       </div>
     </footer>
-  </body>
+  <script>
+const header = document.querySelector("[data-header]");
+const menuButton = document.querySelector(".menu-toggle");
+const nav = document.querySelector(".site-nav");
+const form = document.querySelector("[data-quote-form]");
+const formStatus = document.querySelector("[data-form-status]");
+
+document.querySelector("[data-year]").textContent = new Date().getFullYear();
+
+const syncHeader = () => header.classList.toggle("scrolled", window.scrollY > 24);
+syncHeader();
+window.addEventListener("scroll", syncHeader, { passive: true });
+
+menuButton.addEventListener("click", () => {
+  const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+  menuButton.setAttribute("aria-expanded", String(!isOpen));
+  nav.classList.toggle("open", !isOpen);
+});
+
+nav.addEventListener("click", (event) => {
+  if (!event.target.closest("a")) return;
+  menuButton.setAttribute("aria-expanded", "false");
+  nav.classList.remove("open");
+});
+
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.12 }
+);
+
+document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe(element));
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  formStatus.textContent = "Thanks! Your request has been captured in this preview.";
+});
+
+</script>
+</body>
 </html>
