@@ -244,14 +244,179 @@ button { cursor: pointer; }
 }
 
 </style>
-    <script>
+
+
+  </head>
+  <body>
+    <div class="loading-screen" data-loading>
+      <span class="loading-sun">HH</span>
+      <p>Opening your calendar...</p>
+    </div>
+
+    <main class="login-page" data-login hidden>
+      <section class="login-panel">
+        <div class="login-brand">
+          <span class="brand-mark">HH</span>
+          <span><strong>Sunshine</strong><small>Service Calendar</small></span>
+        </div>
+        <div class="login-copy">
+          <p class="eyebrow">Private operations</p>
+          <h1>Your lawn-care schedule, all in one place.</h1>
+          <p>Sign in to review new requests, customer details, preferred dates, and job status.</p>
+        </div>
+        <form class="login-form" data-login-form>
+          <label>Email address<input type="email" name="email" autocomplete="username" placeholder="you@example.com" required /></label>
+          <label>Password<input type="password" name="password" autocomplete="current-password" placeholder="Your password" required /></label>
+          <button class="primary-button" type="submit">Sign in securely</button>
+          <p class="form-message" role="status" data-login-message></p>
+        </form>
+        <form class="login-form" data-password-form hidden>
+          <p class="setup-message">Your private dashboard invitation is verified. Choose the password you want to use.</p>
+          <label>New password<input type="password" name="password" autocomplete="new-password" minlength="10" placeholder="At least 10 characters" required /></label>
+          <label>Confirm password<input type="password" name="confirmation" autocomplete="new-password" minlength="10" placeholder="Enter it again" required /></label>
+          <button class="primary-button" type="submit">Set my dashboard password</button>
+          <p class="form-message" role="status" data-password-message></p>
+        </form>
+        <button class="demo-button" type="button" data-demo hidden>Preview with sample requests</button>
+        <p class="privacy-note"><span aria-hidden="true">&#128274;</span> Customer details stay behind your account login.</p>
+      </section>
+      <section class="login-art" aria-hidden="true">
+        <div class="art-orbit orbit-one"></div>
+        <div class="art-orbit orbit-two"></div>
+        <div class="art-calendar">
+          <div class="art-calendar-head"><span></span><span></span><strong>JUNE</strong></div>
+          <div class="art-calendar-grid">
+            <i></i><i></i><i></i><i class="job"></i><i></i><i></i><i></i>
+            <i></i><i class="job"></i><i></i><i></i><i></i><i class="job"></i><i></i>
+            <i></i><i></i><i></i><i class="today"></i><i></i><i></i><i></i>
+            <i></i><i class="job"></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="app-shell" data-app hidden>
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark">HH</span>
+          <span><strong>Sunshine</strong><small>Operations</small></span>
+        </div>
+        <nav aria-label="Dashboard navigation">
+          <a class="nav-link active" href="#calendar"><span class="nav-icon">&#9638;</span>Calendar</a>
+          <a class="nav-link" href="#requests"><span class="nav-icon">&#9776;</span>Requests <b data-new-badge>0</b></a>
+          <a class="nav-link" href="#customers"><span class="nav-icon">&#9823;</span>Customers <b data-customer-badge>0</b></a>
+        </nav>
+        <div class="sidebar-filter">
+          <label for="status-filter">Show requests</label>
+          <select id="status-filter" data-status-filter>
+            <option value="all">All requests</option>
+            <option value="new">New</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="sidebar-bottom">
+          <div class="owner-card"><span data-owner-initials>HH</span><p><strong data-owner-name>Owner</strong><small>Private account</small></p></div>
+          <button class="logout-button" type="button" data-logout>Sign out</button>
+        </div>
+      </aside>
+
+      <main class="dashboard-main">
+        <header class="topbar">
+          <div><p class="eyebrow">Sunshine Lawn Care</p><h1>Service calendar</h1></div>
+          <div class="topbar-actions">
+            <label class="search-box"><span class="sr-only">Search requests</span><input type="search" placeholder="Search customers" data-search /></label>
+            <button class="today-button" type="button" data-jump-today>Today</button>
+            <button class="add-customer-button" type="button" data-add-customer>+ Customer</button>
+          </div>
+        </header>
+
+        <section class="stats-grid" aria-label="Request overview">
+          <article><span class="stat-icon new-dot"></span><p><small>New requests</small><strong data-stat-new>0</strong></p></article>
+          <article><span class="stat-icon scheduled-dot"></span><p><small>Customers</small><strong data-stat-customers>0</strong></p></article>
+          <article><span class="stat-icon month-dot"></span><p><small>Jobs this month</small><strong data-stat-month>0</strong></p></article>
+          <article><span class="stat-icon done-dot"></span><p><small>Month value</small><strong data-stat-value>$0</strong></p></article>
+        </section>
+
+        <section class="calendar-card" id="calendar">
+          <header class="calendar-toolbar">
+            <div><h2 data-month-label>Month</h2><p data-calendar-summary>0 requests</p></div>
+            <div class="calendar-controls">
+              <button type="button" aria-label="Previous month" data-prev-month>&#8592;</button>
+              <button type="button" aria-label="Next month" data-next-month>&#8594;</button>
+            </div>
+          </header>
+          <div class="weekday-row" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+          <div class="calendar-grid" data-calendar-grid></div>
+        </section>
+
+        <section class="customers-card" id="customers">
+          <header class="customers-toolbar">
+            <div><p class="eyebrow">Remembered customers</p><h2>Customer lawns</h2><p data-customer-summary>0 customers</p></div>
+            <button class="add-customer-button" type="button" data-add-customer>+ Add customer</button>
+          </header>
+          <div class="customer-list" data-customer-list></div>
+        </section>
+      </main>
+
+      <aside class="request-drawer" aria-hidden="true" data-drawer>
+        <header><div><p class="eyebrow">Request details</p><h2 data-detail-service>Service request</h2></div><button type="button" aria-label="Close request details" data-close-drawer>&times;</button></header>
+        <div class="drawer-body">
+          <div class="detail-status-row"><span class="status-pill" data-detail-status>New</span><time data-detail-created></time></div>
+          <section class="detail-section"><h3>When</h3><div class="detail-highlight"><span class="detail-date-icon">&#9638;</span><p><strong data-detail-date></strong><small data-detail-time></small></p></div></section>
+          <section class="detail-section"><h3>Customer</h3><dl><div><dt>Name</dt><dd data-detail-name></dd></div><div><dt>Phone</dt><dd><a data-detail-phone></a></dd></div><div><dt>Email</dt><dd><a data-detail-email></a></dd></div><div><dt>Address</dt><dd data-detail-address></dd></div></dl></section>
+          <section class="detail-section" data-price-section hidden><h3>Lawn price</h3><p class="detail-price" data-detail-price>$0.00</p></section>
+          <section class="detail-section" data-recurrence-section hidden><h3>Schedule</h3><p class="detail-recurrence" data-detail-recurrence></p></section>
+          <section class="detail-section"><h3>Property notes</h3><p class="detail-notes" data-detail-notes></p></section>
+          <section class="detail-section" data-request-controls><label for="request-status">Update status</label><select id="request-status" data-detail-status-select><option value="new">New request</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select><button class="drawer-action" type="button" data-save-request-customer>Save as customer</button></section>
+          <section class="detail-section" data-customer-controls hidden><button class="drawer-action" type="button" data-edit-customer>Edit price or schedule</button></section>
+        </div>
+      </aside>
+      <button class="drawer-backdrop" type="button" aria-label="Close request details" data-drawer-backdrop hidden></button>
+    </div>
+
+    <div class="modal-backdrop" data-customer-modal hidden>
+      <section class="customer-modal" role="dialog" aria-modal="true" aria-labelledby="customer-modal-title">
+        <header><div><p class="eyebrow">Private customer record</p><h2 id="customer-modal-title" data-customer-modal-title>Add customer</h2></div><button type="button" aria-label="Close customer form" data-close-customer-modal>&times;</button></header>
+        <form data-customer-form>
+          <input type="hidden" name="id" />
+          <input type="hidden" name="sourceRequestId" />
+          <div class="customer-form-row">
+            <label>First name<input type="text" name="firstName" maxlength="80" required /></label>
+            <label>Last name<input type="text" name="lastName" maxlength="80" required /></label>
+          </div>
+          <div class="customer-form-row">
+            <label>Phone<input type="tel" name="phone" maxlength="40" /></label>
+            <label>Email<input type="email" name="email" maxlength="254" /></label>
+          </div>
+          <label>Service address<input type="text" name="address" maxlength="180" required /></label>
+          <div class="customer-form-row">
+            <label>Service<select name="service" required><option value="Lawn mowing">Lawn mowing</option><option value="Edging and trimming">Edging and trimming</option><option value="Seasonal cleanup">Seasonal cleanup</option><option value="Multiple services">Multiple services</option></select></label>
+            <label>Preferred time<select name="preferredTime"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option><option value="Any time">Any time</option></select></label>
+          </div>
+          <div class="customer-form-row">
+            <label>Price for this lawn ($)<input type="number" name="price" min="0" max="100000" step="0.01" inputmode="decimal" placeholder="45.00" required /></label>
+            <label>First service date<input type="date" name="recurrenceStart" /></label>
+          </div>
+          <label class="check-row"><input type="checkbox" name="recurring" /><span><strong>Book every 2 weeks</strong><small>The customer will automatically appear on the calendar every 14 days.</small></span></label>
+          <label class="check-row"><input type="checkbox" name="active" checked /><span><strong>Active customer</strong><small>Turn this off to pause future calendar bookings without deleting the customer.</small></span></label>
+          <label>Property notes<textarea name="notes" maxlength="2000" rows="4" placeholder="Gate access, mowing details, payment notes..."></textarea></label>
+          <p class="form-message" data-customer-form-message></p>
+          <div class="modal-actions"><button class="secondary-button" type="button" data-cancel-customer>Cancel</button><button class="primary-button" type="submit">Save customer</button></div>
+        </form>
+      </section>
+    </div>
+
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+<script>
 window.DASHBOARD_CONFIG = {
   supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
   supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
 };
 
 </script>
-    <script defer>
+<script>
 const config = window.DASHBOARD_CONFIG || {};
 const isConfigured = Boolean(config.supabaseUrl && config.supabaseAnonKey);
 
@@ -1042,169 +1207,6 @@ document.addEventListener("keydown", (event) => {
 })();
 
 </script>
-  </head>
-  <body>
-    <div class="loading-screen" data-loading>
-      <span class="loading-sun">HH</span>
-      <p>Opening your calendar...</p>
-    </div>
-
-    <main class="login-page" data-login hidden>
-      <section class="login-panel">
-        <div class="login-brand">
-          <span class="brand-mark">HH</span>
-          <span><strong>Sunshine</strong><small>Service Calendar</small></span>
-        </div>
-        <div class="login-copy">
-          <p class="eyebrow">Private operations</p>
-          <h1>Your lawn-care schedule, all in one place.</h1>
-          <p>Sign in to review new requests, customer details, preferred dates, and job status.</p>
-        </div>
-        <form class="login-form" data-login-form>
-          <label>Email address<input type="email" name="email" autocomplete="username" placeholder="you@example.com" required /></label>
-          <label>Password<input type="password" name="password" autocomplete="current-password" placeholder="Your password" required /></label>
-          <button class="primary-button" type="submit">Sign in securely</button>
-          <p class="form-message" role="status" data-login-message></p>
-        </form>
-        <form class="login-form" data-password-form hidden>
-          <p class="setup-message">Your private dashboard invitation is verified. Choose the password you want to use.</p>
-          <label>New password<input type="password" name="password" autocomplete="new-password" minlength="10" placeholder="At least 10 characters" required /></label>
-          <label>Confirm password<input type="password" name="confirmation" autocomplete="new-password" minlength="10" placeholder="Enter it again" required /></label>
-          <button class="primary-button" type="submit">Set my dashboard password</button>
-          <p class="form-message" role="status" data-password-message></p>
-        </form>
-        <button class="demo-button" type="button" data-demo hidden>Preview with sample requests</button>
-        <p class="privacy-note"><span aria-hidden="true">&#128274;</span> Customer details stay behind your account login.</p>
-      </section>
-      <section class="login-art" aria-hidden="true">
-        <div class="art-orbit orbit-one"></div>
-        <div class="art-orbit orbit-two"></div>
-        <div class="art-calendar">
-          <div class="art-calendar-head"><span></span><span></span><strong>JUNE</strong></div>
-          <div class="art-calendar-grid">
-            <i></i><i></i><i></i><i class="job"></i><i></i><i></i><i></i>
-            <i></i><i class="job"></i><i></i><i></i><i></i><i class="job"></i><i></i>
-            <i></i><i></i><i></i><i class="today"></i><i></i><i></i><i></i>
-            <i></i><i class="job"></i><i></i><i></i><i></i><i></i><i></i>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <div class="app-shell" data-app hidden>
-      <aside class="sidebar">
-        <div class="sidebar-brand">
-          <span class="brand-mark">HH</span>
-          <span><strong>Sunshine</strong><small>Operations</small></span>
-        </div>
-        <nav aria-label="Dashboard navigation">
-          <a class="nav-link active" href="#calendar"><span class="nav-icon">&#9638;</span>Calendar</a>
-          <a class="nav-link" href="#requests"><span class="nav-icon">&#9776;</span>Requests <b data-new-badge>0</b></a>
-          <a class="nav-link" href="#customers"><span class="nav-icon">&#9823;</span>Customers <b data-customer-badge>0</b></a>
-        </nav>
-        <div class="sidebar-filter">
-          <label for="status-filter">Show requests</label>
-          <select id="status-filter" data-status-filter>
-            <option value="all">All requests</option>
-            <option value="new">New</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-        </div>
-        <div class="sidebar-bottom">
-          <div class="owner-card"><span data-owner-initials>HH</span><p><strong data-owner-name>Owner</strong><small>Private account</small></p></div>
-          <button class="logout-button" type="button" data-logout>Sign out</button>
-        </div>
-      </aside>
-
-      <main class="dashboard-main">
-        <header class="topbar">
-          <div><p class="eyebrow">Sunshine Lawn Care</p><h1>Service calendar</h1></div>
-          <div class="topbar-actions">
-            <label class="search-box"><span class="sr-only">Search requests</span><input type="search" placeholder="Search customers" data-search /></label>
-            <button class="today-button" type="button" data-jump-today>Today</button>
-            <button class="add-customer-button" type="button" data-add-customer>+ Customer</button>
-          </div>
-        </header>
-
-        <section class="stats-grid" aria-label="Request overview">
-          <article><span class="stat-icon new-dot"></span><p><small>New requests</small><strong data-stat-new>0</strong></p></article>
-          <article><span class="stat-icon scheduled-dot"></span><p><small>Customers</small><strong data-stat-customers>0</strong></p></article>
-          <article><span class="stat-icon month-dot"></span><p><small>Jobs this month</small><strong data-stat-month>0</strong></p></article>
-          <article><span class="stat-icon done-dot"></span><p><small>Month value</small><strong data-stat-value>$0</strong></p></article>
-        </section>
-
-        <section class="calendar-card" id="calendar">
-          <header class="calendar-toolbar">
-            <div><h2 data-month-label>Month</h2><p data-calendar-summary>0 requests</p></div>
-            <div class="calendar-controls">
-              <button type="button" aria-label="Previous month" data-prev-month>&#8592;</button>
-              <button type="button" aria-label="Next month" data-next-month>&#8594;</button>
-            </div>
-          </header>
-          <div class="weekday-row" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
-          <div class="calendar-grid" data-calendar-grid></div>
-        </section>
-
-        <section class="customers-card" id="customers">
-          <header class="customers-toolbar">
-            <div><p class="eyebrow">Remembered customers</p><h2>Customer lawns</h2><p data-customer-summary>0 customers</p></div>
-            <button class="add-customer-button" type="button" data-add-customer>+ Add customer</button>
-          </header>
-          <div class="customer-list" data-customer-list></div>
-        </section>
-      </main>
-
-      <aside class="request-drawer" aria-hidden="true" data-drawer>
-        <header><div><p class="eyebrow">Request details</p><h2 data-detail-service>Service request</h2></div><button type="button" aria-label="Close request details" data-close-drawer>&times;</button></header>
-        <div class="drawer-body">
-          <div class="detail-status-row"><span class="status-pill" data-detail-status>New</span><time data-detail-created></time></div>
-          <section class="detail-section"><h3>When</h3><div class="detail-highlight"><span class="detail-date-icon">&#9638;</span><p><strong data-detail-date></strong><small data-detail-time></small></p></div></section>
-          <section class="detail-section"><h3>Customer</h3><dl><div><dt>Name</dt><dd data-detail-name></dd></div><div><dt>Phone</dt><dd><a data-detail-phone></a></dd></div><div><dt>Email</dt><dd><a data-detail-email></a></dd></div><div><dt>Address</dt><dd data-detail-address></dd></div></dl></section>
-          <section class="detail-section" data-price-section hidden><h3>Lawn price</h3><p class="detail-price" data-detail-price>$0.00</p></section>
-          <section class="detail-section" data-recurrence-section hidden><h3>Schedule</h3><p class="detail-recurrence" data-detail-recurrence></p></section>
-          <section class="detail-section"><h3>Property notes</h3><p class="detail-notes" data-detail-notes></p></section>
-          <section class="detail-section" data-request-controls><label for="request-status">Update status</label><select id="request-status" data-detail-status-select><option value="new">New request</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select><button class="drawer-action" type="button" data-save-request-customer>Save as customer</button></section>
-          <section class="detail-section" data-customer-controls hidden><button class="drawer-action" type="button" data-edit-customer>Edit price or schedule</button></section>
-        </div>
-      </aside>
-      <button class="drawer-backdrop" type="button" aria-label="Close request details" data-drawer-backdrop hidden></button>
-    </div>
-
-    <div class="modal-backdrop" data-customer-modal hidden>
-      <section class="customer-modal" role="dialog" aria-modal="true" aria-labelledby="customer-modal-title">
-        <header><div><p class="eyebrow">Private customer record</p><h2 id="customer-modal-title" data-customer-modal-title>Add customer</h2></div><button type="button" aria-label="Close customer form" data-close-customer-modal>&times;</button></header>
-        <form data-customer-form>
-          <input type="hidden" name="id" />
-          <input type="hidden" name="sourceRequestId" />
-          <div class="customer-form-row">
-            <label>First name<input type="text" name="firstName" maxlength="80" required /></label>
-            <label>Last name<input type="text" name="lastName" maxlength="80" required /></label>
-          </div>
-          <div class="customer-form-row">
-            <label>Phone<input type="tel" name="phone" maxlength="40" /></label>
-            <label>Email<input type="email" name="email" maxlength="254" /></label>
-          </div>
-          <label>Service address<input type="text" name="address" maxlength="180" required /></label>
-          <div class="customer-form-row">
-            <label>Service<select name="service" required><option value="Lawn mowing">Lawn mowing</option><option value="Edging and trimming">Edging and trimming</option><option value="Seasonal cleanup">Seasonal cleanup</option><option value="Multiple services">Multiple services</option></select></label>
-            <label>Preferred time<select name="preferredTime"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option><option value="Any time">Any time</option></select></label>
-          </div>
-          <div class="customer-form-row">
-            <label>Price for this lawn ($)<input type="number" name="price" min="0" max="100000" step="0.01" inputmode="decimal" placeholder="45.00" required /></label>
-            <label>First service date<input type="date" name="recurrenceStart" /></label>
-          </div>
-          <label class="check-row"><input type="checkbox" name="recurring" /><span><strong>Book every 2 weeks</strong><small>The customer will automatically appear on the calendar every 14 days.</small></span></label>
-          <label class="check-row"><input type="checkbox" name="active" checked /><span><strong>Active customer</strong><small>Turn this off to pause future calendar bookings without deleting the customer.</small></span></label>
-          <label>Property notes<textarea name="notes" maxlength="2000" rows="4" placeholder="Gate access, mowing details, payment notes..."></textarea></label>
-          <p class="form-message" data-customer-form-message></p>
-          <div class="modal-actions"><button class="secondary-button" type="button" data-cancel-customer>Cancel</button><button class="primary-button" type="submit">Save customer</button></div>
-        </form>
-      </section>
-    </div>
-
-    <div class="toast" role="status" aria-live="polite" data-toast></div>
   </body>
 </html>
 
