@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -25,7 +25,7 @@
 * { box-sizing: border-box; }
 html { color-scheme: light; }
 body { margin: 0; min-width: 320px; min-height: 100vh; color: var(--ink); background: var(--cream); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-button, input, select { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; }
 [hidden] { display: none !important; }
@@ -98,6 +98,7 @@ button { cursor: pointer; }
 .topbar-actions { display: flex; gap: 10px; align-items: center; }
 .search-box input { width: 220px; min-height: 42px; padding: 0 15px 0 38px; border: 1px solid var(--line); border-radius: 7px; outline: none; background: var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2377847b' stroke-width='2'%3E%3Ccircle cx='7' cy='7' r='5'/%3E%3Cpath d='m11 11 4 4'/%3E%3C/svg%3E") no-repeat 13px center; font-size: 12px; }
 .today-button { min-height: 42px; padding: 0 17px; border: 0; border-radius: 7px; color: white; background: var(--green-800); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .6px; }
+.add-customer-button { min-height: 42px; padding: 0 17px; border: 1px solid #e8b400; border-radius: 7px; color: var(--green-950); background: var(--sun); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .6px; }
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin: 32px 0 18px; }
 .stats-grid article { display: flex; align-items: center; gap: 13px; min-height: 86px; padding: 17px 19px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
 .stat-icon { width: 34px; aspect-ratio: 1; border-radius: 10px; }
@@ -133,8 +134,26 @@ button { cursor: pointer; }
 .event-card.status-scheduled { border-color: var(--blue); background: #f0f4ff; }
 .event-card.status-completed { border-color: #6c8978; opacity: .72; }
 .event-card.status-cancelled { border-color: var(--red); opacity: .55; }
+.event-card.status-recurring { border-color: var(--green-700); background: #eaf6ee; }
+.event-card .event-price { color: var(--green-700); font-weight: 900; }
 .more-events { padding-left: 7px; color: var(--green-700); font-size: 8px; font-weight: 850; }
 .empty-state { grid-column: 1 / -1; padding: 80px 20px; color: var(--muted); text-align: center; }
+
+.customers-card { margin-top: 20px; overflow: hidden; border: 1px solid var(--line); border-radius: 11px; background: var(--paper); box-shadow: 0 15px 45px rgba(4,41,24,.06); scroll-margin-top: 24px; }
+.customers-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 23px 25px; border-bottom: 1px solid var(--line); }
+.customers-toolbar h2 { margin: 0; font-family: Georgia, serif; font-size: 24px; }
+.customers-toolbar > div > p:last-child { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+.customer-list { display: grid; }
+.customer-row { display: grid; grid-template-columns: minmax(180px, 1.1fr) minmax(210px, 1.45fr) minmax(130px, .8fr) 110px 44px; gap: 18px; align-items: center; padding: 18px 25px; border-bottom: 1px solid var(--line); }
+.customer-row:last-child { border-bottom: 0; }
+.customer-row:hover { background: #fbfcf8; }
+.customer-person, .customer-property, .customer-schedule { display: flex; min-width: 0; flex-direction: column; }
+.customer-person strong { font-family: Georgia, serif; font-size: 17px; }
+.customer-row small, .customer-property span, .customer-schedule span { overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.customer-property strong, .customer-schedule strong { font-size: 11px; }
+.customer-price { color: var(--green-700); font-family: Georgia, serif; font-size: 20px; font-weight: 800; text-align: right; }
+.customer-edit { width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 7px; color: var(--green-700); background: white; font-weight: 900; }
+.inactive-customer { opacity: .55; }
 
 .request-drawer { position: fixed; z-index: 50; top: 0; right: 0; bottom: 0; width: min(430px, 100%); overflow-y: auto; background: var(--paper); box-shadow: -22px 0 70px rgba(0,0,0,.2); transform: translateX(105%); transition: transform 230ms ease; }
 .request-drawer.open { transform: translateX(0); }
@@ -158,8 +177,30 @@ button { cursor: pointer; }
 .detail-section dd { margin: 0; font-size: 12px; font-weight: 700; word-break: break-word; }
 .detail-section dd a { color: var(--green-700); }
 .detail-notes { margin: 0; color: #4f5e55; font-size: 13px; line-height: 1.65; }
+.detail-price { margin: 0; color: var(--green-700); font-family: Georgia, serif; font-size: 32px; font-weight: 800; }
+.detail-recurrence { margin: 0; color: #4f5e55; font-size: 13px; line-height: 1.6; }
 .detail-section select { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 7px; background: white; outline: none; }
+.drawer-action { width: 100%; min-height: 45px; margin-top: 12px; border: 0; border-radius: 7px; color: var(--green-950); background: var(--sun); font-size: 10px; font-weight: 900; letter-spacing: .7px; text-transform: uppercase; }
 .drawer-backdrop { position: fixed; z-index: 40; inset: 0; border: 0; background: rgba(2,24,14,.5); }
+.modal-backdrop { position: fixed; z-index: 80; inset: 0; display: grid; place-items: center; padding: 24px; overflow-y: auto; background: rgba(2,24,14,.68); }
+.customer-modal { width: min(720px, 100%); max-height: calc(100vh - 48px); overflow-y: auto; border-radius: 13px; background: var(--paper); box-shadow: var(--shadow); }
+.customer-modal > header { position: sticky; z-index: 2; top: 0; display: flex; align-items: center; justify-content: space-between; padding: 22px 26px; border-bottom: 1px solid var(--line); background: rgba(255,254,249,.97); }
+.customer-modal h2 { margin: 0; font-family: Georgia, serif; font-size: 27px; }
+.customer-modal > header button { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 50%; background: white; font-size: 22px; }
+.customer-modal form { display: grid; gap: 16px; padding: 25px 26px 28px; }
+.customer-modal label { display: grid; gap: 7px; color: #536158; font-size: 10px; font-weight: 850; letter-spacing: .65px; text-transform: uppercase; }
+.customer-modal input:not([type="checkbox"]), .customer-modal select, .customer-modal textarea { width: 100%; padding: 12px 13px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); background: white; outline: none; font-size: 13px; text-transform: none; }
+.customer-modal textarea { resize: vertical; }
+.customer-modal input:focus, .customer-modal select:focus, .customer-modal textarea:focus { border-color: var(--green-700); box-shadow: 0 0 0 3px rgba(11,93,51,.1); }
+.customer-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.check-row { grid-template-columns: 20px 1fr; align-items: start; padding: 13px; border: 1px solid var(--line); border-radius: 7px; background: #fafbf7; cursor: pointer; }
+.check-row input { width: 17px; height: 17px; accent-color: var(--green-700); }
+.check-row span { display: flex; flex-direction: column; gap: 3px; }
+.check-row strong { color: var(--ink); font-size: 12px; text-transform: none; }
+.check-row small { color: var(--muted); font-size: 10px; font-weight: 500; letter-spacing: 0; line-height: 1.45; text-transform: none; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 9px; padding-top: 4px; }
+.modal-actions button { min-width: 140px; padding-inline: 18px; }
+.secondary-button { min-height: 52px; border: 1px solid var(--line); border-radius: 7px; color: var(--green-800); background: white; font-size: 11px; font-weight: 900; text-transform: uppercase; }
 .toast { position: fixed; z-index: 100; left: 50%; bottom: 28px; padding: 11px 18px; border-radius: 7px; color: white; background: var(--green-950); box-shadow: var(--shadow); font-size: 12px; transform: translate(-50%, 25px); opacity: 0; pointer-events: none; transition: opacity 180ms ease, transform 180ms ease; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
@@ -191,6 +232,11 @@ button { cursor: pointer; }
   .weekday-row span { font-size: 8px; letter-spacing: 0; }
   .calendar-card { overflow-x: auto; }
   .weekday-row, .calendar-grid, .calendar-toolbar { min-width: 680px; }
+  .customer-row { grid-template-columns: 1fr auto; gap: 10px; }
+  .customer-property, .customer-schedule { grid-column: 1; }
+  .customer-price { grid-column: 2; grid-row: 1; }
+  .customer-edit { grid-column: 2; grid-row: 2 / span 2; }
+  .customer-form-row { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -198,8 +244,804 @@ button { cursor: pointer; }
 }
 
 </style>
-    
-    
+    <script>
+window.DASHBOARD_CONFIG = {
+  supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
+  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
+};
+
+</script>
+    <script defer>
+const config = window.DASHBOARD_CONFIG || {};
+const isConfigured = Boolean(config.supabaseUrl && config.supabaseAnonKey);
+
+const elements = {
+  loading: document.querySelector("[data-loading]"),
+  login: document.querySelector("[data-login]"),
+  app: document.querySelector("[data-app]"),
+  loginForm: document.querySelector("[data-login-form]"),
+  loginMessage: document.querySelector("[data-login-message]"),
+  passwordForm: document.querySelector("[data-password-form]"),
+  passwordMessage: document.querySelector("[data-password-message]"),
+  demo: document.querySelector("[data-demo]"),
+  logout: document.querySelector("[data-logout]"),
+  calendar: document.querySelector("[data-calendar-grid]"),
+  monthLabel: document.querySelector("[data-month-label]"),
+  calendarSummary: document.querySelector("[data-calendar-summary]"),
+  prevMonth: document.querySelector("[data-prev-month]"),
+  nextMonth: document.querySelector("[data-next-month]"),
+  jumpToday: document.querySelector("[data-jump-today]"),
+  search: document.querySelector("[data-search]"),
+  statusFilter: document.querySelector("[data-status-filter]"),
+  newBadge: document.querySelector("[data-new-badge]"),
+  customerBadge: document.querySelector("[data-customer-badge]"),
+  statNew: document.querySelector("[data-stat-new]"),
+  statCustomers: document.querySelector("[data-stat-customers]"),
+  statMonth: document.querySelector("[data-stat-month]"),
+  statValue: document.querySelector("[data-stat-value]"),
+  customerSummary: document.querySelector("[data-customer-summary]"),
+  customerList: document.querySelector("[data-customer-list]"),
+  addCustomerButtons: document.querySelectorAll("[data-add-customer]"),
+  drawer: document.querySelector("[data-drawer]"),
+  drawerBackdrop: document.querySelector("[data-drawer-backdrop]"),
+  closeDrawer: document.querySelector("[data-close-drawer]"),
+  detailService: document.querySelector("[data-detail-service]"),
+  detailStatus: document.querySelector("[data-detail-status]"),
+  detailCreated: document.querySelector("[data-detail-created]"),
+  detailDate: document.querySelector("[data-detail-date]"),
+  detailTime: document.querySelector("[data-detail-time]"),
+  detailName: document.querySelector("[data-detail-name]"),
+  detailPhone: document.querySelector("[data-detail-phone]"),
+  detailEmail: document.querySelector("[data-detail-email]"),
+  detailAddress: document.querySelector("[data-detail-address]"),
+  detailNotes: document.querySelector("[data-detail-notes]"),
+  detailStatusSelect: document.querySelector("[data-detail-status-select]"),
+  priceSection: document.querySelector("[data-price-section]"),
+  detailPrice: document.querySelector("[data-detail-price]"),
+  recurrenceSection: document.querySelector("[data-recurrence-section]"),
+  detailRecurrence: document.querySelector("[data-detail-recurrence]"),
+  requestControls: document.querySelector("[data-request-controls]"),
+  customerControls: document.querySelector("[data-customer-controls]"),
+  saveRequestCustomer: document.querySelector("[data-save-request-customer]"),
+  editCustomer: document.querySelector("[data-edit-customer]"),
+  customerModal: document.querySelector("[data-customer-modal]"),
+  customerModalTitle: document.querySelector("[data-customer-modal-title]"),
+  closeCustomerModal: document.querySelector("[data-close-customer-modal]"),
+  cancelCustomer: document.querySelector("[data-cancel-customer]"),
+  customerForm: document.querySelector("[data-customer-form]"),
+  customerFormMessage: document.querySelector("[data-customer-form-message]"),
+  ownerInitials: document.querySelector("[data-owner-initials]"),
+  ownerName: document.querySelector("[data-owner-name]"),
+  toast: document.querySelector("[data-toast]")
+};
+
+const today = new Date();
+const state = {
+  currentMonth: new Date(today.getFullYear(), today.getMonth(), 1),
+  requests: [],
+  customers: [],
+  selectedId: null,
+  selectedType: null,
+  selectedDate: null,
+  accessToken: sessionStorage.getItem("sunshine_access_token") || "",
+  demoMode: false,
+  filter: "all",
+  query: ""
+};
+
+const inviteParams = new URLSearchParams(window.location.hash.slice(1));
+const inviteToken = inviteParams.get("access_token") || "";
+const inviteType = inviteParams.get("type") || "";
+const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+
+const dateKey = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const parseDate = (value) => new Date(value + "T12:00:00");
+const formatMoney = (cents = 0) => currency.format(Number(cents) / 100);
+const customerName = (customer) => (customer.first_name + " " + customer.last_name).trim();
+
+const createDemoRequests = () => {
+  const makeDate = (day) => dateKey(new Date(today.getFullYear(), today.getMonth(), day));
+  return [
+    { id: "demo-1", first_name: "Maria", last_name: "Santos", phone: "(555) 014-2044", email: "maria@example.com", address: "184 Palm View Drive", requested_date: makeDate(Math.min(5, 25)), preferred_time: "Morning", service: "Lawn mowing", notes: "Front and back yard. Gate is on the left side.", status: "new", created_at: new Date().toISOString() },
+    { id: "demo-2", first_name: "James", last_name: "Walker", phone: "(555) 011-8820", email: "james@example.com", address: "922 Lake Ridge Way", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Afternoon", service: "Edging and trimming", notes: "Please focus on the driveway edges and hedges near the porch.", status: "scheduled", created_at: new Date().toISOString() },
+    { id: "demo-3", first_name: "Alicia", last_name: "Brown", phone: "(555) 016-7781", email: "alicia@example.com", address: "47 Sunshine Court", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Any time", service: "Multiple services", notes: "Seasonal cleanup plus mowing. There are leaves behind the shed.", status: "new", created_at: new Date().toISOString() },
+    { id: "demo-4", first_name: "Robert", last_name: "Green", phone: "(555) 018-3402", email: "robert@example.com", address: "611 Gardenia Avenue", requested_date: makeDate(Math.min(19, 25)), preferred_time: "Morning", service: "Seasonal cleanup", notes: "Cleanup around the flower beds and fence line.", status: "completed", created_at: new Date().toISOString() }
+  ];
+};
+
+const apiHeaders = (authenticated = true) => {
+  const headers = {
+    apikey: config.supabaseAnonKey,
+    "Content-Type": "application/json"
+  };
+  if (authenticated && state.accessToken) headers.Authorization = `Bearer ${state.accessToken}`;
+  return headers;
+};
+
+const showLogin = () => {
+  elements.loading.hidden = true;
+  elements.app.hidden = true;
+  elements.login.hidden = false;
+  elements.loginForm.hidden = false;
+  elements.passwordForm.hidden = true;
+  elements.demo.hidden = isConfigured;
+};
+
+const showPasswordSetup = () => {
+  elements.loading.hidden = true;
+  elements.app.hidden = true;
+  elements.login.hidden = false;
+  elements.loginForm.hidden = true;
+  elements.demo.hidden = true;
+  elements.passwordForm.hidden = false;
+};
+
+const showApp = (email = "Owner") => {
+  window.scrollTo({ top: 0, behavior: "auto" });
+  elements.loading.hidden = true;
+  elements.login.hidden = true;
+  elements.app.hidden = false;
+  const localName = email.includes("@") ? email.split("@")[0] : email;
+  elements.ownerName.textContent = localName || "Owner";
+  elements.ownerInitials.textContent = (localName || "HH").slice(0, 2).toUpperCase();
+  render();
+};
+
+const verifySession = async () => {
+  if (!state.accessToken || !isConfigured) return false;
+  const response = await fetch(`${config.supabaseUrl}/auth/v1/user`, { headers: apiHeaders() });
+  if (!response.ok) return false;
+  const user = await response.json();
+  if (!(await verifyOwner())) return false;
+  await loadData();
+  showApp(user.email);
+  return true;
+};
+
+const verifyOwner = async () => {
+  const response = await fetch(`${config.supabaseUrl}/rest/v1/dashboard_owners?select=user_id&limit=1`, { headers: apiHeaders() });
+  if (!response.ok) return false;
+  const owners = await response.json();
+  return owners.length === 1;
+};
+
+const loadData = async () => {
+  const responses = await Promise.all([
+    fetch(config.supabaseUrl + "/rest/v1/service_requests?select=*&order=requested_date.asc,created_at.asc", { headers: apiHeaders() }),
+    fetch(config.supabaseUrl + "/rest/v1/customers?select=*&order=last_name.asc,first_name.asc", { headers: apiHeaders() })
+  ]);
+  if (!responses[0].ok || !responses[1].ok) throw new Error("Dashboard data could not be loaded");
+  state.requests = await responses[0].json();
+  state.customers = await responses[1].json();
+};
+
+const legacyFilteredRequests = () => state.requests.filter((request) => {
+  const statusMatch = state.filter === "all" || request.status === state.filter;
+  const haystack = `${request.first_name} ${request.last_name} ${request.service} ${request.address}`.toLowerCase();
+  return statusMatch && haystack.includes(state.query);
+});
+
+const legacyRenderStats = () => {
+  const month = state.currentMonth.getMonth();
+  const year = state.currentMonth.getFullYear();
+  elements.statNew.textContent = state.requests.filter((request) => request.status === "new").length;
+  elements.statScheduled.textContent = state.requests.filter((request) => request.status === "scheduled").length;
+  elements.statCompleted.textContent = state.requests.filter((request) => request.status === "completed").length;
+  elements.statMonth.textContent = state.requests.filter((request) => {
+    const date = new Date(`${request.requested_date}T12:00:00`);
+    return date.getMonth() === month && date.getFullYear() === year;
+  }).length;
+  elements.newBadge.textContent = elements.statNew.textContent;
+};
+
+const legacyRenderCalendar = () => {
+  const year = state.currentMonth.getFullYear();
+  const month = state.currentMonth.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const gridStart = new Date(year, month, 1 - firstDay.getDay());
+  const visibleRequests = filteredRequests();
+  const monthRequests = visibleRequests.filter((request) => request.requested_date.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`));
+
+  elements.monthLabel.textContent = state.currentMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  elements.calendarSummary.textContent = `${monthRequests.length} ${monthRequests.length === 1 ? "request" : "requests"} this month`;
+  elements.calendar.innerHTML = "";
+
+  for (let index = 0; index < 42; index += 1) {
+    const date = new Date(gridStart);
+    date.setDate(gridStart.getDate() + index);
+    const key = dateKey(date);
+    const dayRequests = visibleRequests.filter((request) => request.requested_date === key);
+    const cell = document.createElement("div");
+    cell.className = "day-cell";
+    if (date.getMonth() !== month) cell.classList.add("outside");
+    if (key === dateKey(today)) cell.classList.add("today");
+
+    const number = document.createElement("span");
+    number.className = "day-number";
+    number.textContent = date.getDate();
+    cell.append(number);
+
+    const events = document.createElement("div");
+    events.className = "day-events";
+    dayRequests.slice(0, 3).forEach((request) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `event-card status-${request.status}`;
+      button.dataset.requestId = request.id;
+      button.innerHTML = `<strong>${request.first_name} ${request.last_name}</strong><span>${request.service}</span>`;
+      events.append(button);
+    });
+    if (dayRequests.length > 3) {
+      const more = document.createElement("span");
+      more.className = "more-events";
+      more.textContent = `+${dayRequests.length - 3} more`;
+      events.append(more);
+    }
+    cell.append(events);
+    elements.calendar.append(cell);
+  }
+};
+
+const legacyRender = () => {
+  renderStats();
+  renderCalendar();
+};
+
+const legacyFormatDate = (value) => new Date(`${value}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+const formatDate = (value) => parseDate(value).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+const matchesQuery = (item) => (
+  item.first_name + " " + item.last_name + " " + item.service + " " + item.address + " " + (item.phone || "") + " " + (item.email || "")
+).toLowerCase().includes(state.query);
+
+const filteredRequests = () => state.requests.filter((request) => {
+  const statusMatch = state.filter === "all" || request.status === state.filter;
+  return statusMatch && matchesQuery(request);
+});
+
+const filteredCustomers = () => state.customers.filter(matchesQuery);
+
+const recurringEntries = (rangeStart, rangeEnd) => {
+  if (!["all", "scheduled"].includes(state.filter)) return [];
+  const entries = [];
+  filteredCustomers().filter((customer) => customer.active && customer.recurring && customer.recurrence_start).forEach((customer) => {
+    const intervalDays = Math.max(1, Number(customer.recurrence_weeks || 2)) * 7;
+    const cursor = parseDate(customer.recurrence_start);
+    if (cursor < rangeStart) {
+      const elapsedDays = Math.floor((rangeStart - cursor) / 86400000);
+      cursor.setDate(cursor.getDate() + Math.ceil(elapsedDays / intervalDays) * intervalDays);
+    }
+    while (cursor <= rangeEnd) {
+      entries.push({ kind: "customer", id: customer.id, date: dateKey(cursor), customer });
+      cursor.setDate(cursor.getDate() + intervalDays);
+    }
+  });
+  return entries;
+};
+
+const calendarEntries = (rangeStart, rangeEnd) => {
+  const rememberedRequests = new Set(state.customers.map((customer) => customer.source_request_id).filter(Boolean));
+  const requests = filteredRequests()
+    .filter((request) => !rememberedRequests.has(request.id))
+    .filter((request) => {
+      const date = parseDate(request.requested_date);
+      return date >= rangeStart && date <= rangeEnd;
+    })
+    .map((request) => ({ kind: "request", id: request.id, date: request.requested_date, request }));
+  return requests.concat(recurringEntries(rangeStart, rangeEnd));
+};
+
+const renderStats = () => {
+  const year = state.currentMonth.getFullYear();
+  const month = state.currentMonth.getMonth();
+  const entries = calendarEntries(new Date(year, month, 1, 12), new Date(year, month + 1, 0, 12));
+  const monthValue = entries.filter((entry) => entry.kind === "customer").reduce((total, entry) => total + Number(entry.customer.price_cents || 0), 0);
+  elements.statNew.textContent = state.requests.filter((request) => request.status === "new" && !state.customers.some((customer) => customer.source_request_id === request.id)).length;
+  elements.statCustomers.textContent = state.customers.filter((customer) => customer.active).length;
+  elements.statMonth.textContent = entries.length;
+  elements.statValue.textContent = formatMoney(monthValue);
+  elements.newBadge.textContent = elements.statNew.textContent;
+  elements.customerBadge.textContent = state.customers.length;
+};
+
+const renderCalendar = () => {
+  const year = state.currentMonth.getFullYear();
+  const month = state.currentMonth.getMonth();
+  const firstDay = new Date(year, month, 1, 12);
+  const gridStart = new Date(year, month, 1 - firstDay.getDay(), 12);
+  const gridEnd = new Date(gridStart);
+  gridEnd.setDate(gridStart.getDate() + 41);
+  const entries = calendarEntries(gridStart, gridEnd);
+  const monthPrefix = year + "-" + String(month + 1).padStart(2, "0");
+  const monthEntries = entries.filter((entry) => entry.date.startsWith(monthPrefix));
+  elements.monthLabel.textContent = state.currentMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  elements.calendarSummary.textContent = monthEntries.length + " " + (monthEntries.length === 1 ? "job" : "jobs") + " this month";
+  elements.calendar.innerHTML = "";
+
+  for (let index = 0; index < 42; index += 1) {
+    const date = new Date(gridStart);
+    date.setDate(gridStart.getDate() + index);
+    const key = dateKey(date);
+    const dayEntries = entries.filter((entry) => entry.date === key);
+    const cell = document.createElement("div");
+    cell.className = "day-cell";
+    if (date.getMonth() !== month) cell.classList.add("outside");
+    if (key === dateKey(today)) cell.classList.add("today");
+    const number = document.createElement("span");
+    number.className = "day-number";
+    number.textContent = date.getDate();
+    cell.append(number);
+    const events = document.createElement("div");
+    events.className = "day-events";
+    dayEntries.slice(0, 3).forEach((entry) => {
+      const item = entry.kind === "request" ? entry.request : entry.customer;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "event-card status-" + (entry.kind === "request" ? item.status : "recurring");
+      button.dataset.entryKind = entry.kind;
+      button.dataset.entryId = entry.id;
+      button.dataset.entryDate = entry.date;
+      const name = document.createElement("strong");
+      name.textContent = customerName(item);
+      const service = document.createElement("span");
+      service.textContent = item.service;
+      button.append(name, service);
+      if (entry.kind === "customer") {
+        const price = document.createElement("span");
+        price.className = "event-price";
+        price.textContent = formatMoney(item.price_cents);
+        button.append(price);
+      }
+      events.append(button);
+    });
+    if (dayEntries.length > 3) {
+      const more = document.createElement("span");
+      more.className = "more-events";
+      more.textContent = "+" + (dayEntries.length - 3) + " more";
+      events.append(more);
+    }
+    cell.append(events);
+    elements.calendar.append(cell);
+  }
+};
+
+const renderCustomers = () => {
+  const customers = filteredCustomers();
+  const recurringCount = state.customers.filter((customer) => customer.active && customer.recurring).length;
+  elements.customerSummary.textContent = state.customers.length + " " + (state.customers.length === 1 ? "customer" : "customers") + " - " + recurringCount + " booked every 2 weeks";
+  elements.customerList.innerHTML = "";
+  if (!customers.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = state.customers.length ? "No customers match your search." : "No saved customers yet. Add one or save an incoming request as a customer.";
+    elements.customerList.append(empty);
+    return;
+  }
+  customers.forEach((customer) => {
+    const row = document.createElement("article");
+    row.className = "customer-row" + (customer.active ? "" : " inactive-customer");
+    const person = document.createElement("div");
+    person.className = "customer-person";
+    const name = document.createElement("strong");
+    name.textContent = customerName(customer);
+    const contact = document.createElement("small");
+    contact.textContent = customer.phone || customer.email || "No contact details";
+    person.append(name, contact);
+    const property = document.createElement("div");
+    property.className = "customer-property";
+    const service = document.createElement("strong");
+    service.textContent = customer.service;
+    const address = document.createElement("span");
+    address.textContent = customer.address;
+    property.append(service, address);
+    const schedule = document.createElement("div");
+    schedule.className = "customer-schedule";
+    const cadence = document.createElement("strong");
+    cadence.textContent = customer.recurring ? "Every 2 weeks" : "Saved customer";
+    const start = document.createElement("span");
+    start.textContent = customer.recurring && customer.recurrence_start
+      ? "Starting " + formatDate(customer.recurrence_start)
+      : customer.active ? "No repeat booking" : "Schedule paused";
+    schedule.append(cadence, start);
+    const price = document.createElement("strong");
+    price.className = "customer-price";
+    price.textContent = formatMoney(customer.price_cents);
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "customer-edit";
+    edit.dataset.customerEdit = customer.id;
+    edit.setAttribute("aria-label", "Edit " + customerName(customer));
+    edit.textContent = "Edit";
+    row.append(person, property, schedule, price, edit);
+    elements.customerList.append(row);
+  });
+};
+
+const render = () => {
+  renderStats();
+  renderCalendar();
+  renderCustomers();
+};
+
+const openRequest = (id) => {
+  const request = state.requests.find((item) => item.id === id);
+  if (!request) return;
+  const savedCustomer = state.customers.find((customer) => customer.source_request_id === request.id);
+  state.selectedId = id;
+  state.selectedType = "request";
+  state.selectedDate = request.requested_date;
+  elements.detailService.textContent = request.service;
+  elements.detailStatus.textContent = request.status;
+  elements.detailStatus.className = `status-pill status-${request.status}`;
+  elements.detailCreated.textContent = `Received ${new Date(request.created_at).toLocaleDateString()}`;
+  elements.detailDate.textContent = formatDate(request.requested_date);
+  elements.detailTime.textContent = request.preferred_time || "Time not specified";
+  elements.detailName.textContent = `${request.first_name} ${request.last_name}`;
+  elements.detailPhone.textContent = request.phone;
+  elements.detailPhone.href = `tel:${request.phone}`;
+  elements.detailEmail.textContent = request.email;
+  elements.detailEmail.href = `mailto:${request.email}`;
+  elements.detailAddress.textContent = request.address;
+  elements.detailNotes.textContent = request.notes || "No additional notes were provided.";
+  elements.detailStatusSelect.value = request.status;
+  elements.priceSection.hidden = true;
+  elements.recurrenceSection.hidden = true;
+  elements.requestControls.hidden = false;
+  elements.customerControls.hidden = true;
+  elements.saveRequestCustomer.textContent = savedCustomer ? "Edit customer record" : "Save as customer and set price";
+  elements.drawer.classList.add("open");
+  elements.drawer.setAttribute("aria-hidden", "false");
+  elements.drawerBackdrop.hidden = false;
+};
+
+const setContactLink = (element, value, prefix) => {
+  element.textContent = value || "Not provided";
+  if (value) element.href = prefix + ":" + value;
+  else element.removeAttribute("href");
+};
+
+const openCustomer = (id, occurrenceDate = null) => {
+  const customer = state.customers.find((item) => item.id === id);
+  if (!customer) return;
+  state.selectedId = id;
+  state.selectedType = "customer";
+  state.selectedDate = occurrenceDate;
+  elements.detailService.textContent = customer.service;
+  elements.detailStatus.textContent = customer.active ? "Active customer" : "Paused";
+  elements.detailStatus.className = "status-pill status-" + (customer.active ? "scheduled" : "cancelled");
+  elements.detailCreated.textContent = "Customer since " + new Date(customer.created_at).toLocaleDateString();
+  elements.detailDate.textContent = occurrenceDate ? formatDate(occurrenceDate) : customer.recurrence_start ? formatDate(customer.recurrence_start) : "No booking date";
+  elements.detailTime.textContent = customer.preferred_time || "Any time";
+  elements.detailName.textContent = customerName(customer);
+  setContactLink(elements.detailPhone, customer.phone, "tel");
+  setContactLink(elements.detailEmail, customer.email, "mailto");
+  elements.detailAddress.textContent = customer.address;
+  elements.detailNotes.textContent = customer.notes || "No property notes saved.";
+  elements.detailPrice.textContent = formatMoney(customer.price_cents);
+  elements.detailRecurrence.textContent = customer.recurring && customer.recurrence_start
+    ? "Booked every " + (customer.recurrence_weeks || 2) + " weeks starting " + formatDate(customer.recurrence_start) + "."
+    : "This customer is saved without a repeating booking.";
+  elements.priceSection.hidden = false;
+  elements.recurrenceSection.hidden = false;
+  elements.requestControls.hidden = true;
+  elements.customerControls.hidden = false;
+  elements.drawer.classList.add("open");
+  elements.drawer.setAttribute("aria-hidden", "false");
+  elements.drawerBackdrop.hidden = false;
+};
+
+const closeDrawer = () => {
+  elements.drawer.classList.remove("open");
+  elements.drawer.setAttribute("aria-hidden", "true");
+  elements.drawerBackdrop.hidden = true;
+  state.selectedId = null;
+  state.selectedType = null;
+  state.selectedDate = null;
+};
+
+let toastTimer;
+const showToast = (message) => {
+  clearTimeout(toastTimer);
+  elements.toast.textContent = message;
+  elements.toast.classList.add("show");
+  toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 2600);
+};
+
+const customerFormField = (name) => elements.customerForm.elements.namedItem(name);
+
+const openCustomerModal = (customer = null, sourceRequest = null) => {
+  elements.customerForm.reset();
+  elements.customerFormMessage.textContent = "";
+  customerFormField("id").value = customer ? customer.id : "";
+  customerFormField("sourceRequestId").value = customer ? (customer.source_request_id || "") : sourceRequest ? sourceRequest.id : "";
+  customerFormField("firstName").value = customer ? customer.first_name : sourceRequest ? sourceRequest.first_name : "";
+  customerFormField("lastName").value = customer ? customer.last_name : sourceRequest ? sourceRequest.last_name : "";
+  customerFormField("phone").value = customer ? customer.phone : sourceRequest ? sourceRequest.phone : "";
+  customerFormField("email").value = customer ? customer.email : sourceRequest ? sourceRequest.email : "";
+  customerFormField("address").value = customer ? customer.address : sourceRequest ? sourceRequest.address : "";
+  customerFormField("service").value = customer ? customer.service : sourceRequest ? sourceRequest.service : "Lawn mowing";
+  customerFormField("preferredTime").value = customer ? customer.preferred_time : sourceRequest ? sourceRequest.preferred_time : "Any time";
+  customerFormField("price").value = customer ? (Number(customer.price_cents || 0) / 100).toFixed(2) : "";
+  customerFormField("recurrenceStart").value = customer ? (customer.recurrence_start || "") : sourceRequest ? sourceRequest.requested_date : "";
+  customerFormField("recurring").checked = customer ? Boolean(customer.recurring) : Boolean(sourceRequest);
+  customerFormField("active").checked = customer ? Boolean(customer.active) : true;
+  customerFormField("notes").value = customer ? customer.notes : sourceRequest ? sourceRequest.notes : "";
+  customerFormField("recurrenceStart").required = customerFormField("recurring").checked;
+  elements.customerModalTitle.textContent = customer ? "Edit customer" : sourceRequest ? "Remember this customer" : "Add customer";
+  elements.customerModal.hidden = false;
+  document.body.style.overflow = "hidden";
+};
+
+const closeCustomerModal = () => {
+  elements.customerModal.hidden = true;
+  elements.customerFormMessage.textContent = "";
+  document.body.style.overflow = "";
+};
+
+const saveCustomer = async (event) => {
+  event.preventDefault();
+  const button = elements.customerForm.querySelector("button[type=submit]");
+  const id = customerFormField("id").value;
+  const recurring = customerFormField("recurring").checked;
+  const recurrenceStart = customerFormField("recurrenceStart").value;
+  if (recurring && !recurrenceStart) {
+    elements.customerFormMessage.textContent = "Choose the first service date for the two-week schedule.";
+    return;
+  }
+  const payload = {
+    first_name: customerFormField("firstName").value.trim(),
+    last_name: customerFormField("lastName").value.trim(),
+    phone: customerFormField("phone").value.trim(),
+    email: customerFormField("email").value.trim().toLowerCase(),
+    address: customerFormField("address").value.trim(),
+    service: customerFormField("service").value,
+    preferred_time: customerFormField("preferredTime").value,
+    price_cents: Math.round(Number(customerFormField("price").value || 0) * 100),
+    recurring,
+    recurrence_weeks: 2,
+    recurrence_start: recurring ? recurrenceStart : null,
+    active: customerFormField("active").checked,
+    notes: customerFormField("notes").value.trim(),
+    source_request_id: customerFormField("sourceRequestId").value || null,
+    updated_at: new Date().toISOString()
+  };
+  button.disabled = true;
+  button.textContent = "Saving...";
+  elements.customerFormMessage.textContent = "";
+  try {
+    let saved;
+    if (state.demoMode) {
+      const existing = state.customers.find((customer) => customer.id === id);
+      saved = { ...payload, id: id || "demo-customer-" + Date.now(), created_at: existing ? existing.created_at : new Date().toISOString() };
+    } else {
+      const endpoint = id ? "/rest/v1/customers?id=eq." + encodeURIComponent(id) : "/rest/v1/customers";
+      const response = await fetch(config.supabaseUrl + endpoint, {
+        method: id ? "PATCH" : "POST",
+        headers: { ...apiHeaders(), Prefer: "return=representation" },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) throw new Error("Customer could not be saved");
+      const rows = await response.json();
+      saved = rows[0];
+    }
+    const existingIndex = state.customers.findIndex((customer) => customer.id === saved.id);
+    if (existingIndex >= 0) state.customers[existingIndex] = saved;
+    else state.customers.push(saved);
+    state.customers.sort((a, b) => customerName(a).localeCompare(customerName(b)));
+    if (payload.source_request_id) {
+      const request = state.requests.find((item) => item.id === payload.source_request_id);
+      if (request && request.status === "new") {
+        request.status = "scheduled";
+        if (!state.demoMode) {
+          await fetch(config.supabaseUrl + "/rest/v1/service_requests?id=eq." + encodeURIComponent(request.id), {
+            method: "PATCH",
+            headers: { ...apiHeaders(), Prefer: "return=minimal" },
+            body: JSON.stringify({ status: "scheduled" })
+          });
+        }
+      }
+    }
+    closeCustomerModal();
+    closeDrawer();
+    render();
+    showToast(id ? "Customer updated" : "Customer saved and booked");
+  } catch (error) {
+    elements.customerFormMessage.textContent = "This customer could not be saved. Check the details and try again.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Save customer";
+  }
+};
+
+const updateRequestStatus = async (status) => {
+  const request = state.requests.find((item) => item.id === state.selectedId);
+  if (!request) return;
+  const previous = request.status;
+  request.status = status;
+  render();
+  openRequest(request.id);
+
+  if (!state.demoMode) {
+    const response = await fetch(`${config.supabaseUrl}/rest/v1/service_requests?id=eq.${encodeURIComponent(request.id)}`, {
+      method: "PATCH",
+      headers: { ...apiHeaders(), Prefer: "return=minimal" },
+      body: JSON.stringify({ status })
+    });
+    if (!response.ok) {
+      request.status = previous;
+      render();
+      openRequest(request.id);
+      showToast("Status could not be updated");
+      return;
+    }
+  }
+  showToast("Request status updated");
+};
+
+elements.loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  elements.loginMessage.textContent = "";
+  const button = elements.loginForm.querySelector("button[type=submit]");
+  button.disabled = true;
+  button.textContent = "Signing in...";
+  const data = new FormData(elements.loginForm);
+  const email = String(data.get("email")).trim().toLowerCase();
+  const password = String(data.get("password"));
+
+  try {
+    const response = await fetch(`${config.supabaseUrl}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: apiHeaders(false),
+      body: JSON.stringify({ email, password })
+    });
+    const session = await response.json();
+    if (!response.ok) throw new Error(session.error_description || "Sign in failed");
+    state.accessToken = session.access_token;
+    sessionStorage.setItem("sunshine_access_token", state.accessToken);
+    if (!(await verifyOwner())) throw new Error("Account is not authorized");
+    await loadData();
+    showApp(email);
+  } catch (error) {
+    sessionStorage.removeItem("sunshine_access_token");
+    state.accessToken = "";
+    elements.loginMessage.textContent = "Email or password is incorrect, or this account is not authorized.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Sign in securely";
+  }
+});
+
+elements.passwordForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  elements.passwordMessage.textContent = "";
+  const data = new FormData(elements.passwordForm);
+  const password = String(data.get("password"));
+  const confirmation = String(data.get("confirmation"));
+  const button = elements.passwordForm.querySelector("button[type=submit]");
+
+  if (password !== confirmation) {
+    elements.passwordMessage.textContent = "The passwords do not match.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Saving password...";
+  try {
+    const response = await fetch(`${config.supabaseUrl}/auth/v1/user`, {
+      method: "PUT",
+      headers: {
+        apikey: config.supabaseAnonKey,
+        Authorization: `Bearer ${inviteToken}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ password })
+    });
+    if (!response.ok) throw new Error("Password could not be saved");
+    state.accessToken = inviteToken;
+    sessionStorage.setItem("sunshine_access_token", state.accessToken);
+    window.history.replaceState({}, document.title, window.location.pathname);
+    if (!(await verifyOwner())) throw new Error("Account is not authorized");
+    await loadData();
+    const user = await (await fetch(`${config.supabaseUrl}/auth/v1/user`, { headers: apiHeaders() })).json();
+    showApp(user.email || "Owner");
+  } catch (error) {
+    elements.passwordMessage.textContent = "This invitation has expired or could not be completed.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Set my dashboard password";
+  }
+});
+
+elements.demo.addEventListener("click", () => {
+  state.demoMode = true;
+  state.requests = createDemoRequests();
+  state.customers = [
+    { id: "demo-customer-1", first_name: "Maria", last_name: "Santos", phone: "(555) 014-2044", email: "maria@example.com", address: "184 Palm View Drive", service: "Lawn mowing", preferred_time: "Morning", price_cents: 4500, recurring: true, recurrence_weeks: 2, recurrence_start: dateKey(new Date(today.getFullYear(), today.getMonth(), 5)), active: true, notes: "Front and back yard. Gate is on the left side.", created_at: new Date().toISOString(), source_request_id: null },
+    { id: "demo-customer-2", first_name: "James", last_name: "Walker", phone: "(555) 011-8820", email: "james@example.com", address: "922 Lake Ridge Way", service: "Edging and trimming", preferred_time: "Afternoon", price_cents: 6000, recurring: true, recurrence_weeks: 2, recurrence_start: dateKey(new Date(today.getFullYear(), today.getMonth(), 9)), active: true, notes: "Driveway edges and hedges near the porch.", created_at: new Date().toISOString(), source_request_id: null }
+  ];
+  showApp("Preview Owner");
+});
+
+elements.logout.addEventListener("click", async () => {
+  if (state.accessToken && isConfigured) {
+    await fetch(`${config.supabaseUrl}/auth/v1/logout`, { method: "POST", headers: apiHeaders() }).catch(() => {});
+  }
+  sessionStorage.removeItem("sunshine_access_token");
+  state.accessToken = "";
+  state.demoMode = false;
+  state.requests = [];
+  state.customers = [];
+  closeDrawer();
+  closeCustomerModal();
+  showLogin();
+});
+
+elements.prevMonth.addEventListener("click", () => { state.currentMonth.setMonth(state.currentMonth.getMonth() - 1); render(); });
+elements.nextMonth.addEventListener("click", () => { state.currentMonth.setMonth(state.currentMonth.getMonth() + 1); render(); });
+elements.jumpToday.addEventListener("click", () => { state.currentMonth = new Date(today.getFullYear(), today.getMonth(), 1); render(); });
+elements.statusFilter.addEventListener("change", () => { state.filter = elements.statusFilter.value; render(); });
+elements.search.addEventListener("input", () => { state.query = elements.search.value.trim().toLowerCase(); render(); });
+elements.calendar.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-entry-id]");
+  if (!card) return;
+  if (card.dataset.entryKind === "request") openRequest(card.dataset.entryId);
+  else openCustomer(card.dataset.entryId, card.dataset.entryDate);
+});
+elements.customerList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-customer-edit]");
+  if (!button) return;
+  const customer = state.customers.find((item) => item.id === button.dataset.customerEdit);
+  if (customer) openCustomerModal(customer);
+});
+elements.addCustomerButtons.forEach((button) => button.addEventListener("click", () => openCustomerModal()));
+elements.closeDrawer.addEventListener("click", closeDrawer);
+elements.drawerBackdrop.addEventListener("click", closeDrawer);
+elements.detailStatusSelect.addEventListener("change", () => updateRequestStatus(elements.detailStatusSelect.value));
+elements.saveRequestCustomer.addEventListener("click", () => {
+  const request = state.requests.find((item) => item.id === state.selectedId);
+  if (!request) return;
+  const customer = state.customers.find((item) => item.source_request_id === request.id);
+  openCustomerModal(customer || null, customer ? null : request);
+});
+elements.editCustomer.addEventListener("click", () => {
+  const customer = state.customers.find((item) => item.id === state.selectedId);
+  if (customer) openCustomerModal(customer);
+});
+elements.closeCustomerModal.addEventListener("click", closeCustomerModal);
+elements.cancelCustomer.addEventListener("click", closeCustomerModal);
+elements.customerModal.addEventListener("click", (event) => { if (event.target === elements.customerModal) closeCustomerModal(); });
+customerFormField("recurring").addEventListener("change", () => { customerFormField("recurrenceStart").required = customerFormField("recurring").checked; });
+elements.customerForm.addEventListener("submit", saveCustomer);
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  if (!elements.customerModal.hidden) closeCustomerModal();
+  else closeDrawer();
+});
+
+(async () => {
+  if (!isConfigured) {
+    showLogin();
+    return;
+  }
+  if (inviteToken && ["invite", "recovery"].includes(inviteType)) {
+    showPasswordSetup();
+    return;
+  }
+  try {
+    if (await verifySession()) return;
+  } catch (error) {
+    sessionStorage.removeItem("sunshine_access_token");
+  }
+  showLogin();
+})();
+
+</script>
   </head>
   <body>
     <div class="loading-screen" data-loading>
@@ -258,6 +1100,7 @@ button { cursor: pointer; }
         <nav aria-label="Dashboard navigation">
           <a class="nav-link active" href="#calendar"><span class="nav-icon">&#9638;</span>Calendar</a>
           <a class="nav-link" href="#requests"><span class="nav-icon">&#9776;</span>Requests <b data-new-badge>0</b></a>
+          <a class="nav-link" href="#customers"><span class="nav-icon">&#9823;</span>Customers <b data-customer-badge>0</b></a>
         </nav>
         <div class="sidebar-filter">
           <label for="status-filter">Show requests</label>
@@ -281,14 +1124,15 @@ button { cursor: pointer; }
           <div class="topbar-actions">
             <label class="search-box"><span class="sr-only">Search requests</span><input type="search" placeholder="Search customers" data-search /></label>
             <button class="today-button" type="button" data-jump-today>Today</button>
+            <button class="add-customer-button" type="button" data-add-customer>+ Customer</button>
           </div>
         </header>
 
         <section class="stats-grid" aria-label="Request overview">
           <article><span class="stat-icon new-dot"></span><p><small>New requests</small><strong data-stat-new>0</strong></p></article>
-          <article><span class="stat-icon scheduled-dot"></span><p><small>Scheduled</small><strong data-stat-scheduled>0</strong></p></article>
-          <article><span class="stat-icon month-dot"></span><p><small>This month</small><strong data-stat-month>0</strong></p></article>
-          <article><span class="stat-icon done-dot"></span><p><small>Completed</small><strong data-stat-completed>0</strong></p></article>
+          <article><span class="stat-icon scheduled-dot"></span><p><small>Customers</small><strong data-stat-customers>0</strong></p></article>
+          <article><span class="stat-icon month-dot"></span><p><small>Jobs this month</small><strong data-stat-month>0</strong></p></article>
+          <article><span class="stat-icon done-dot"></span><p><small>Month value</small><strong data-stat-value>$0</strong></p></article>
         </section>
 
         <section class="calendar-card" id="calendar">
@@ -302,6 +1146,14 @@ button { cursor: pointer; }
           <div class="weekday-row" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
           <div class="calendar-grid" data-calendar-grid></div>
         </section>
+
+        <section class="customers-card" id="customers">
+          <header class="customers-toolbar">
+            <div><p class="eyebrow">Remembered customers</p><h2>Customer lawns</h2><p data-customer-summary>0 customers</p></div>
+            <button class="add-customer-button" type="button" data-add-customer>+ Add customer</button>
+          </header>
+          <div class="customer-list" data-customer-list></div>
+        </section>
       </main>
 
       <aside class="request-drawer" aria-hidden="true" data-drawer>
@@ -310,417 +1162,49 @@ button { cursor: pointer; }
           <div class="detail-status-row"><span class="status-pill" data-detail-status>New</span><time data-detail-created></time></div>
           <section class="detail-section"><h3>When</h3><div class="detail-highlight"><span class="detail-date-icon">&#9638;</span><p><strong data-detail-date></strong><small data-detail-time></small></p></div></section>
           <section class="detail-section"><h3>Customer</h3><dl><div><dt>Name</dt><dd data-detail-name></dd></div><div><dt>Phone</dt><dd><a data-detail-phone></a></dd></div><div><dt>Email</dt><dd><a data-detail-email></a></dd></div><div><dt>Address</dt><dd data-detail-address></dd></div></dl></section>
+          <section class="detail-section" data-price-section hidden><h3>Lawn price</h3><p class="detail-price" data-detail-price>$0.00</p></section>
+          <section class="detail-section" data-recurrence-section hidden><h3>Schedule</h3><p class="detail-recurrence" data-detail-recurrence></p></section>
           <section class="detail-section"><h3>Property notes</h3><p class="detail-notes" data-detail-notes></p></section>
-          <section class="detail-section"><label for="request-status">Update status</label><select id="request-status" data-detail-status-select><option value="new">New request</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></section>
+          <section class="detail-section" data-request-controls><label for="request-status">Update status</label><select id="request-status" data-detail-status-select><option value="new">New request</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select><button class="drawer-action" type="button" data-save-request-customer>Save as customer</button></section>
+          <section class="detail-section" data-customer-controls hidden><button class="drawer-action" type="button" data-edit-customer>Edit price or schedule</button></section>
         </div>
       </aside>
       <button class="drawer-backdrop" type="button" aria-label="Close request details" data-drawer-backdrop hidden></button>
     </div>
 
+    <div class="modal-backdrop" data-customer-modal hidden>
+      <section class="customer-modal" role="dialog" aria-modal="true" aria-labelledby="customer-modal-title">
+        <header><div><p class="eyebrow">Private customer record</p><h2 id="customer-modal-title" data-customer-modal-title>Add customer</h2></div><button type="button" aria-label="Close customer form" data-close-customer-modal>&times;</button></header>
+        <form data-customer-form>
+          <input type="hidden" name="id" />
+          <input type="hidden" name="sourceRequestId" />
+          <div class="customer-form-row">
+            <label>First name<input type="text" name="firstName" maxlength="80" required /></label>
+            <label>Last name<input type="text" name="lastName" maxlength="80" required /></label>
+          </div>
+          <div class="customer-form-row">
+            <label>Phone<input type="tel" name="phone" maxlength="40" /></label>
+            <label>Email<input type="email" name="email" maxlength="254" /></label>
+          </div>
+          <label>Service address<input type="text" name="address" maxlength="180" required /></label>
+          <div class="customer-form-row">
+            <label>Service<select name="service" required><option value="Lawn mowing">Lawn mowing</option><option value="Edging and trimming">Edging and trimming</option><option value="Seasonal cleanup">Seasonal cleanup</option><option value="Multiple services">Multiple services</option></select></label>
+            <label>Preferred time<select name="preferredTime"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option><option value="Any time">Any time</option></select></label>
+          </div>
+          <div class="customer-form-row">
+            <label>Price for this lawn ($)<input type="number" name="price" min="0" max="100000" step="0.01" inputmode="decimal" placeholder="45.00" required /></label>
+            <label>First service date<input type="date" name="recurrenceStart" /></label>
+          </div>
+          <label class="check-row"><input type="checkbox" name="recurring" /><span><strong>Book every 2 weeks</strong><small>The customer will automatically appear on the calendar every 14 days.</small></span></label>
+          <label class="check-row"><input type="checkbox" name="active" checked /><span><strong>Active customer</strong><small>Turn this off to pause future calendar bookings without deleting the customer.</small></span></label>
+          <label>Property notes<textarea name="notes" maxlength="2000" rows="4" placeholder="Gate access, mowing details, payment notes..."></textarea></label>
+          <p class="form-message" data-customer-form-message></p>
+          <div class="modal-actions"><button class="secondary-button" type="button" data-cancel-customer>Cancel</button><button class="primary-button" type="submit">Save customer</button></div>
+        </form>
+      </section>
+    </div>
+
     <div class="toast" role="status" aria-live="polite" data-toast></div>
-  <script>
-window.DASHBOARD_CONFIG = {
-  supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
-  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
-};
-
-const config = window.DASHBOARD_CONFIG || {};
-const isConfigured = Boolean(config.supabaseUrl && config.supabaseAnonKey);
-
-const elements = {
-  loading: document.querySelector("[data-loading]"),
-  login: document.querySelector("[data-login]"),
-  app: document.querySelector("[data-app]"),
-  loginForm: document.querySelector("[data-login-form]"),
-  loginMessage: document.querySelector("[data-login-message]"),
-  passwordForm: document.querySelector("[data-password-form]"),
-  passwordMessage: document.querySelector("[data-password-message]"),
-  demo: document.querySelector("[data-demo]"),
-  logout: document.querySelector("[data-logout]"),
-  calendar: document.querySelector("[data-calendar-grid]"),
-  monthLabel: document.querySelector("[data-month-label]"),
-  calendarSummary: document.querySelector("[data-calendar-summary]"),
-  prevMonth: document.querySelector("[data-prev-month]"),
-  nextMonth: document.querySelector("[data-next-month]"),
-  jumpToday: document.querySelector("[data-jump-today]"),
-  search: document.querySelector("[data-search]"),
-  statusFilter: document.querySelector("[data-status-filter]"),
-  newBadge: document.querySelector("[data-new-badge]"),
-  statNew: document.querySelector("[data-stat-new]"),
-  statScheduled: document.querySelector("[data-stat-scheduled]"),
-  statMonth: document.querySelector("[data-stat-month]"),
-  statCompleted: document.querySelector("[data-stat-completed]"),
-  drawer: document.querySelector("[data-drawer]"),
-  drawerBackdrop: document.querySelector("[data-drawer-backdrop]"),
-  closeDrawer: document.querySelector("[data-close-drawer]"),
-  detailService: document.querySelector("[data-detail-service]"),
-  detailStatus: document.querySelector("[data-detail-status]"),
-  detailCreated: document.querySelector("[data-detail-created]"),
-  detailDate: document.querySelector("[data-detail-date]"),
-  detailTime: document.querySelector("[data-detail-time]"),
-  detailName: document.querySelector("[data-detail-name]"),
-  detailPhone: document.querySelector("[data-detail-phone]"),
-  detailEmail: document.querySelector("[data-detail-email]"),
-  detailAddress: document.querySelector("[data-detail-address]"),
-  detailNotes: document.querySelector("[data-detail-notes]"),
-  detailStatusSelect: document.querySelector("[data-detail-status-select]"),
-  ownerInitials: document.querySelector("[data-owner-initials]"),
-  ownerName: document.querySelector("[data-owner-name]"),
-  toast: document.querySelector("[data-toast]")
-};
-
-const today = new Date();
-const state = {
-  currentMonth: new Date(today.getFullYear(), today.getMonth(), 1),
-  requests: [],
-  selectedId: null,
-  accessToken: sessionStorage.getItem("sunshine_access_token") || "",
-  demoMode: false,
-  filter: "all",
-  query: ""
-};
-
-const inviteParams = new URLSearchParams(window.location.hash.slice(1));
-const inviteToken = inviteParams.get("access_token") || "";
-const inviteType = inviteParams.get("type") || "";
-
-const dateKey = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
-
-const createDemoRequests = () => {
-  const makeDate = (day) => dateKey(new Date(today.getFullYear(), today.getMonth(), day));
-  return [
-    { id: "demo-1", first_name: "Maria", last_name: "Santos", phone: "(555) 014-2044", email: "maria@example.com", address: "184 Palm View Drive", requested_date: makeDate(Math.min(5, 25)), preferred_time: "Morning", service: "Lawn mowing", notes: "Front and back yard. Gate is on the left side.", status: "new", created_at: new Date().toISOString() },
-    { id: "demo-2", first_name: "James", last_name: "Walker", phone: "(555) 011-8820", email: "james@example.com", address: "922 Lake Ridge Way", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Afternoon", service: "Edging and trimming", notes: "Please focus on the driveway edges and hedges near the porch.", status: "scheduled", created_at: new Date().toISOString() },
-    { id: "demo-3", first_name: "Alicia", last_name: "Brown", phone: "(555) 016-7781", email: "alicia@example.com", address: "47 Sunshine Court", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Any time", service: "Multiple services", notes: "Seasonal cleanup plus mowing. There are leaves behind the shed.", status: "new", created_at: new Date().toISOString() },
-    { id: "demo-4", first_name: "Robert", last_name: "Green", phone: "(555) 018-3402", email: "robert@example.com", address: "611 Gardenia Avenue", requested_date: makeDate(Math.min(19, 25)), preferred_time: "Morning", service: "Seasonal cleanup", notes: "Cleanup around the flower beds and fence line.", status: "completed", created_at: new Date().toISOString() }
-  ];
-};
-
-const apiHeaders = (authenticated = true) => {
-  const headers = {
-    apikey: config.supabaseAnonKey,
-    "Content-Type": "application/json"
-  };
-  if (authenticated && state.accessToken) headers.Authorization = `Bearer ${state.accessToken}`;
-  return headers;
-};
-
-const showLogin = () => {
-  elements.loading.hidden = true;
-  elements.app.hidden = true;
-  elements.login.hidden = false;
-  elements.loginForm.hidden = false;
-  elements.passwordForm.hidden = true;
-  elements.demo.hidden = isConfigured;
-};
-
-const showPasswordSetup = () => {
-  elements.loading.hidden = true;
-  elements.app.hidden = true;
-  elements.login.hidden = false;
-  elements.loginForm.hidden = true;
-  elements.demo.hidden = true;
-  elements.passwordForm.hidden = false;
-};
-
-const showApp = (email = "Owner") => {
-  window.scrollTo({ top: 0, behavior: "auto" });
-  elements.loading.hidden = true;
-  elements.login.hidden = true;
-  elements.app.hidden = false;
-  const localName = email.includes("@") ? email.split("@")[0] : email;
-  elements.ownerName.textContent = localName || "Owner";
-  elements.ownerInitials.textContent = (localName || "HH").slice(0, 2).toUpperCase();
-  render();
-};
-
-const verifySession = async () => {
-  if (!state.accessToken || !isConfigured) return false;
-  const response = await fetch(`${config.supabaseUrl}/auth/v1/user`, { headers: apiHeaders() });
-  if (!response.ok) return false;
-  const user = await response.json();
-  if (!(await verifyOwner())) return false;
-  await loadRequests();
-  showApp(user.email);
-  return true;
-};
-
-const verifyOwner = async () => {
-  const response = await fetch(`${config.supabaseUrl}/rest/v1/dashboard_owners?select=user_id&limit=1`, { headers: apiHeaders() });
-  if (!response.ok) return false;
-  const owners = await response.json();
-  return owners.length === 1;
-};
-
-const loadRequests = async () => {
-  const endpoint = `${config.supabaseUrl}/rest/v1/service_requests?select=*&order=requested_date.asc,created_at.asc`;
-  const response = await fetch(endpoint, { headers: apiHeaders() });
-  if (!response.ok) throw new Error("Requests could not be loaded");
-  state.requests = await response.json();
-};
-
-const filteredRequests = () => state.requests.filter((request) => {
-  const statusMatch = state.filter === "all" || request.status === state.filter;
-  const haystack = `${request.first_name} ${request.last_name} ${request.service} ${request.address}`.toLowerCase();
-  return statusMatch && haystack.includes(state.query);
-});
-
-const renderStats = () => {
-  const month = state.currentMonth.getMonth();
-  const year = state.currentMonth.getFullYear();
-  elements.statNew.textContent = state.requests.filter((request) => request.status === "new").length;
-  elements.statScheduled.textContent = state.requests.filter((request) => request.status === "scheduled").length;
-  elements.statCompleted.textContent = state.requests.filter((request) => request.status === "completed").length;
-  elements.statMonth.textContent = state.requests.filter((request) => {
-    const date = new Date(`${request.requested_date}T12:00:00`);
-    return date.getMonth() === month && date.getFullYear() === year;
-  }).length;
-  elements.newBadge.textContent = elements.statNew.textContent;
-};
-
-const renderCalendar = () => {
-  const year = state.currentMonth.getFullYear();
-  const month = state.currentMonth.getMonth();
-  const firstDay = new Date(year, month, 1);
-  const gridStart = new Date(year, month, 1 - firstDay.getDay());
-  const visibleRequests = filteredRequests();
-  const monthRequests = visibleRequests.filter((request) => request.requested_date.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`));
-
-  elements.monthLabel.textContent = state.currentMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-  elements.calendarSummary.textContent = `${monthRequests.length} ${monthRequests.length === 1 ? "request" : "requests"} this month`;
-  elements.calendar.innerHTML = "";
-
-  for (let index = 0; index < 42; index += 1) {
-    const date = new Date(gridStart);
-    date.setDate(gridStart.getDate() + index);
-    const key = dateKey(date);
-    const dayRequests = visibleRequests.filter((request) => request.requested_date === key);
-    const cell = document.createElement("div");
-    cell.className = "day-cell";
-    if (date.getMonth() !== month) cell.classList.add("outside");
-    if (key === dateKey(today)) cell.classList.add("today");
-
-    const number = document.createElement("span");
-    number.className = "day-number";
-    number.textContent = date.getDate();
-    cell.append(number);
-
-    const events = document.createElement("div");
-    events.className = "day-events";
-    dayRequests.slice(0, 3).forEach((request) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = `event-card status-${request.status}`;
-      button.dataset.requestId = request.id;
-      button.innerHTML = `<strong>${request.first_name} ${request.last_name}</strong><span>${request.service}</span>`;
-      events.append(button);
-    });
-    if (dayRequests.length > 3) {
-      const more = document.createElement("span");
-      more.className = "more-events";
-      more.textContent = `+${dayRequests.length - 3} more`;
-      events.append(more);
-    }
-    cell.append(events);
-    elements.calendar.append(cell);
-  }
-};
-
-const render = () => {
-  renderStats();
-  renderCalendar();
-};
-
-const formatDate = (value) => new Date(`${value}T12:00:00`).toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-
-const openRequest = (id) => {
-  const request = state.requests.find((item) => item.id === id);
-  if (!request) return;
-  state.selectedId = id;
-  elements.detailService.textContent = request.service;
-  elements.detailStatus.textContent = request.status;
-  elements.detailStatus.className = `status-pill status-${request.status}`;
-  elements.detailCreated.textContent = `Received ${new Date(request.created_at).toLocaleDateString()}`;
-  elements.detailDate.textContent = formatDate(request.requested_date);
-  elements.detailTime.textContent = request.preferred_time || "Time not specified";
-  elements.detailName.textContent = `${request.first_name} ${request.last_name}`;
-  elements.detailPhone.textContent = request.phone;
-  elements.detailPhone.href = `tel:${request.phone}`;
-  elements.detailEmail.textContent = request.email;
-  elements.detailEmail.href = `mailto:${request.email}`;
-  elements.detailAddress.textContent = request.address;
-  elements.detailNotes.textContent = request.notes || "No additional notes were provided.";
-  elements.detailStatusSelect.value = request.status;
-  elements.drawer.classList.add("open");
-  elements.drawer.setAttribute("aria-hidden", "false");
-  elements.drawerBackdrop.hidden = false;
-};
-
-const closeDrawer = () => {
-  elements.drawer.classList.remove("open");
-  elements.drawer.setAttribute("aria-hidden", "true");
-  elements.drawerBackdrop.hidden = true;
-  state.selectedId = null;
-};
-
-let toastTimer;
-const showToast = (message) => {
-  clearTimeout(toastTimer);
-  elements.toast.textContent = message;
-  elements.toast.classList.add("show");
-  toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 2600);
-};
-
-const updateRequestStatus = async (status) => {
-  const request = state.requests.find((item) => item.id === state.selectedId);
-  if (!request) return;
-  const previous = request.status;
-  request.status = status;
-  render();
-  openRequest(request.id);
-
-  if (!state.demoMode) {
-    const response = await fetch(`${config.supabaseUrl}/rest/v1/service_requests?id=eq.${encodeURIComponent(request.id)}`, {
-      method: "PATCH",
-      headers: { ...apiHeaders(), Prefer: "return=minimal" },
-      body: JSON.stringify({ status })
-    });
-    if (!response.ok) {
-      request.status = previous;
-      render();
-      openRequest(request.id);
-      showToast("Status could not be updated");
-      return;
-    }
-  }
-  showToast("Request status updated");
-};
-
-elements.loginForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  elements.loginMessage.textContent = "";
-  const button = elements.loginForm.querySelector("button[type=submit]");
-  button.disabled = true;
-  button.textContent = "Signing in...";
-  const data = new FormData(elements.loginForm);
-  const email = String(data.get("email")).trim().toLowerCase();
-  const password = String(data.get("password"));
-
-  try {
-    const response = await fetch(`${config.supabaseUrl}/auth/v1/token?grant_type=password`, {
-      method: "POST",
-      headers: apiHeaders(false),
-      body: JSON.stringify({ email, password })
-    });
-    const session = await response.json();
-    if (!response.ok) throw new Error(session.error_description || "Sign in failed");
-    state.accessToken = session.access_token;
-    sessionStorage.setItem("sunshine_access_token", state.accessToken);
-    if (!(await verifyOwner())) throw new Error("Account is not authorized");
-    await loadRequests();
-    showApp(email);
-  } catch (error) {
-    sessionStorage.removeItem("sunshine_access_token");
-    state.accessToken = "";
-    elements.loginMessage.textContent = "Email or password is incorrect, or this account is not authorized.";
-  } finally {
-    button.disabled = false;
-    button.textContent = "Sign in securely";
-  }
-});
-
-elements.passwordForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  elements.passwordMessage.textContent = "";
-  const data = new FormData(elements.passwordForm);
-  const password = String(data.get("password"));
-  const confirmation = String(data.get("confirmation"));
-  const button = elements.passwordForm.querySelector("button[type=submit]");
-
-  if (password !== confirmation) {
-    elements.passwordMessage.textContent = "The passwords do not match.";
-    return;
-  }
-
-  button.disabled = true;
-  button.textContent = "Saving password...";
-  try {
-    const response = await fetch(`${config.supabaseUrl}/auth/v1/user`, {
-      method: "PUT",
-      headers: {
-        apikey: config.supabaseAnonKey,
-        Authorization: `Bearer ${inviteToken}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ password })
-    });
-    if (!response.ok) throw new Error("Password could not be saved");
-    state.accessToken = inviteToken;
-    sessionStorage.setItem("sunshine_access_token", state.accessToken);
-    window.history.replaceState({}, document.title, window.location.pathname);
-    if (!(await verifyOwner())) throw new Error("Account is not authorized");
-    await loadRequests();
-    const user = await (await fetch(`${config.supabaseUrl}/auth/v1/user`, { headers: apiHeaders() })).json();
-    showApp(user.email || "Owner");
-  } catch (error) {
-    elements.passwordMessage.textContent = "This invitation has expired or could not be completed.";
-  } finally {
-    button.disabled = false;
-    button.textContent = "Set my dashboard password";
-  }
-});
-
-elements.demo.addEventListener("click", () => {
-  state.demoMode = true;
-  state.requests = createDemoRequests();
-  showApp("Preview Owner");
-});
-
-elements.logout.addEventListener("click", async () => {
-  if (state.accessToken && isConfigured) {
-    await fetch(`${config.supabaseUrl}/auth/v1/logout`, { method: "POST", headers: apiHeaders() }).catch(() => {});
-  }
-  sessionStorage.removeItem("sunshine_access_token");
-  state.accessToken = "";
-  state.demoMode = false;
-  state.requests = [];
-  closeDrawer();
-  showLogin();
-});
-
-elements.prevMonth.addEventListener("click", () => { state.currentMonth.setMonth(state.currentMonth.getMonth() - 1); render(); });
-elements.nextMonth.addEventListener("click", () => { state.currentMonth.setMonth(state.currentMonth.getMonth() + 1); render(); });
-elements.jumpToday.addEventListener("click", () => { state.currentMonth = new Date(today.getFullYear(), today.getMonth(), 1); render(); });
-elements.statusFilter.addEventListener("change", () => { state.filter = elements.statusFilter.value; renderCalendar(); });
-elements.search.addEventListener("input", () => { state.query = elements.search.value.trim().toLowerCase(); renderCalendar(); });
-elements.calendar.addEventListener("click", (event) => { const card = event.target.closest("[data-request-id]"); if (card) openRequest(card.dataset.requestId); });
-elements.closeDrawer.addEventListener("click", closeDrawer);
-elements.drawerBackdrop.addEventListener("click", closeDrawer);
-elements.detailStatusSelect.addEventListener("change", () => updateRequestStatus(elements.detailStatusSelect.value));
-document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDrawer(); });
-
-(async () => {
-  if (!isConfigured) {
-    showLogin();
-    return;
-  }
-  if (inviteToken && ["invite", "recovery"].includes(inviteType)) {
-    showPasswordSetup();
-    return;
-  }
-  try {
-    if (await verifySession()) return;
-  } catch (error) {
-    sessionStorage.removeItem("sunshine_access_token");
-  }
-  showLogin();
-})();
-
-</script>
-</body>
+  </body>
 </html>
+
