@@ -508,7 +508,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
             </div>
             <label>Service address<input type="text" name="address" autocomplete="street-address" placeholder="Street address" maxlength="180" required /></label>
             <div class="field-row">
-              <label>Approximate lawn size (sq. ft.)<input type="number" name="lawnSizeSqft" min="100" max="1000000" step="100" inputmode="numeric" placeholder="Example: 5000" required /></label>
+              <label>Approximate lawn size (acres)<input type="number" name="lawnSizeAcres" min="0.01" max="1000" step="0.01" inputmode="decimal" placeholder="Example: 0.25" required /></label>
               <label>Is the lawn fenced?
                 <select name="hasFence" required>
                   <option value="" selected disabled>Select one</option>
@@ -528,7 +528,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
                   <option value="5">5 or more</option>
                 </select>
               </label>
-              <label>Obstruction details<input type="text" name="obstructionDetails" maxlength="500" placeholder="Trees, playset, steep areas..." /></label>
+              <label>List every obstruction<textarea name="obstructionDetails" maxlength="500" rows="2" placeholder="Example: 2 trees, playset, steep ditch"></textarea></label>
             </div>
             <div class="estimate-box" data-estimate-box>
               <div><small>Average price calculator</small><strong data-estimate-price>Enter your lawn details</strong><p data-estimate-range>We will show an estimated range before you send the request.</p></div>
@@ -630,9 +630,10 @@ document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe
 
 const requestConfig = window.REQUEST_CONFIG || {};
 const requestedDate = form.querySelector("[name=requestedDate]");
-const lawnSizeInput = form.querySelector("[name=lawnSizeSqft]");
+const lawnSizeInput = form.querySelector("[name=lawnSizeAcres]");
 const fenceInput = form.querySelector("[name=hasFence]");
 const obstructionInput = form.querySelector("[name=obstructionCount]");
+const obstructionDetailsInput = form.querySelector("[name=obstructionDetails]");
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 let latestEstimateKey = "";
 let estimateTimer;
@@ -643,6 +644,12 @@ requestedDate.min = today.toISOString().slice(0, 10);
 
 const estimateKey = () => [lawnSizeInput.value, fenceInput.value, obstructionInput.value].join("|");
 
+const syncObstructionRequirement = () => {
+  const hasObstructions = Number(obstructionInput.value) > 0;
+  obstructionDetailsInput.required = hasObstructions;
+  obstructionDetailsInput.setAttribute("aria-required", String(hasObstructions));
+};
+
 const resetEstimate = () => {
   latestEstimateKey = "";
   estimatePrice.textContent = "Enter your lawn details";
@@ -650,10 +657,10 @@ const resetEstimate = () => {
 };
 
 const calculateEstimate = async (showPrompt = true) => {
-  const lawnSize = Number(lawnSizeInput.value);
+  const lawnSizeAcres = Number(lawnSizeInput.value);
   const hasFence = fenceInput.value;
   const obstructionCount = Number(obstructionInput.value);
-  if (!Number.isFinite(lawnSize) || lawnSize < 100 || hasFence === "") {
+  if (!Number.isFinite(lawnSizeAcres) || lawnSizeAcres < 0.01 || hasFence === "") {
     if (showPrompt) {
       estimatePrice.textContent = "Add lawn size and fence details";
       estimateRange.textContent = "Those details are needed to calculate an average.";
@@ -666,14 +673,14 @@ const calculateEstimate = async (showPrompt = true) => {
   calculateEstimateButton.textContent = "Calculating...";
   estimateBox.classList.add("loading");
   try {
-    const response = await fetch(requestConfig.supabaseUrl + "/rest/v1/rpc/calculate_lawn_estimate", {
+    const response = await fetch(requestConfig.supabaseUrl + "/rest/v1/rpc/calculate_lawn_estimate_acres", {
       method: "POST",
       headers: {
         apikey: requestConfig.supabaseAnonKey,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        lawn_size_sqft_input: Math.round(lawnSize),
+        lawn_size_acres_input: lawnSizeAcres,
         has_fence_input: hasFence === "true",
         obstruction_count_input: obstructionCount
       })
@@ -700,10 +707,12 @@ const calculateEstimate = async (showPrompt = true) => {
 calculateEstimateButton.addEventListener("click", () => calculateEstimate(true));
 [lawnSizeInput, fenceInput, obstructionInput].forEach((field) => {
   field.addEventListener("change", () => {
+    syncObstructionRequirement();
     clearTimeout(estimateTimer);
     estimateTimer = setTimeout(() => calculateEstimate(false), 250);
   });
 });
+syncObstructionRequirement();
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -731,7 +740,7 @@ form.addEventListener("submit", async (event) => {
     phone: String(data.get("phone")).trim(),
     email: String(data.get("email")).trim(),
     address: String(data.get("address")).trim(),
-    lawn_size_sqft: Number(data.get("lawnSizeSqft")),
+    lawn_size_acres: Number(data.get("lawnSizeAcres")),
     has_fence: String(data.get("hasFence")) === "true",
     obstruction_count: Number(data.get("obstructionCount")),
     obstruction_details: String(data.get("obstructionDetails")).trim(),
@@ -756,6 +765,7 @@ form.addEventListener("submit", async (event) => {
 
     form.reset();
     requestedDate.min = today.toISOString().slice(0, 10);
+    syncObstructionRequirement();
     resetEstimate();
     formStatus.textContent = "Thank you! Your request is on our calendar for review.";
   } catch (error) {
