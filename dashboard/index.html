@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -122,6 +122,9 @@ button { cursor: pointer; }
 .day-cell:nth-child(7n) { border-right: 0; }
 .day-cell:nth-last-child(-n+7) { border-bottom: 0; }
 .day-cell.outside { background: #fafbf8; }
+.day-cell.unavailable-day { background: repeating-linear-gradient(135deg, #fbf5f5, #fbf5f5 8px, #fff 8px, #fff 16px); }
+.day-cell.sunday-closed { background: #f6f6f3; }
+.closed-label { position: absolute; top: 11px; right: 8px; max-width: 70px; overflow: hidden; color: #a04c4c; font-size: 7px; font-weight: 900; letter-spacing: .5px; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
 .day-number { width: 27px; height: 27px; display: grid; place-items: center; margin-bottom: 4px; border-radius: 50%; color: #647068; font-size: 11px; font-weight: 800; }
 .outside .day-number { color: #b8bfba; }
 .day-cell.today .day-number { color: var(--green-950); background: var(--sun); }
@@ -138,6 +141,23 @@ button { cursor: pointer; }
 .event-card .event-price { color: var(--green-700); font-weight: 900; }
 .more-events { padding-left: 7px; color: var(--green-700); font-size: 8px; font-weight: 850; }
 .empty-state { grid-column: 1 / -1; padding: 80px 20px; color: var(--muted); text-align: center; }
+
+.scheduling-card { margin-top: 20px; overflow: hidden; border: 1px solid var(--line); border-radius: 11px; background: var(--paper); box-shadow: 0 15px 45px rgba(4,41,24,.06); scroll-margin-top: 24px; }
+.scheduling-toolbar { padding: 23px 25px; border-bottom: 1px solid var(--line); }
+.scheduling-toolbar h2 { margin: 0; font-family: Georgia, serif; font-size: 24px; }
+.scheduling-toolbar > div > p:last-child { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+.scheduling-content { padding: 24px 25px 27px; }
+.block-date-form { display: grid; grid-template-columns: minmax(170px, .7fr) minmax(250px, 1.3fr) auto; gap: 12px; align-items: end; }
+.block-date-form label { display: grid; gap: 7px; color: #536158; font-size: 9px; font-weight: 850; letter-spacing: .55px; text-transform: uppercase; }
+.block-date-form input { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); background: white; outline: none; font-size: 13px; }
+.block-date-form .primary-button { min-height: 44px; padding-inline: 20px; }
+.blocked-date-list { display: grid; gap: 8px; margin-top: 16px; }
+.blocked-date-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 12px 14px; border: 1px solid #ead6d6; border-radius: 8px; background: #fff8f8; }
+.blocked-date-row p { display: flex; min-width: 0; flex-direction: column; margin: 0; }
+.blocked-date-row strong { font-family: Georgia, serif; font-size: 15px; }
+.blocked-date-row span { overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.blocked-date-row button { flex: none; min-height: 34px; padding: 0 11px; border: 1px solid #e4bcbc; border-radius: 6px; color: #982e2e; background: white; font-size: 9px; font-weight: 900; text-transform: uppercase; }
+.blocked-date-empty { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
 
 .customers-card { margin-top: 20px; overflow: hidden; border: 1px solid var(--line); border-radius: 11px; background: var(--paper); box-shadow: 0 15px 45px rgba(4,41,24,.06); scroll-margin-top: 24px; }
 .customers-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 23px 25px; border-bottom: 1px solid var(--line); }
@@ -200,6 +220,7 @@ button { cursor: pointer; }
 .detail-recurrence { margin: 0; color: #4f5e55; font-size: 13px; line-height: 1.6; }
 .detail-section select { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 7px; background: white; outline: none; }
 .drawer-action { width: 100%; min-height: 45px; margin-top: 12px; border: 0; border-radius: 7px; color: var(--green-950); background: var(--sun); font-size: 10px; font-weight: 900; letter-spacing: .7px; text-transform: uppercase; }
+.drawer-danger { width: 100%; min-height: 43px; margin-top: 9px; border: 1px solid #e4bcbc; border-radius: 7px; color: #982e2e; background: #fff7f7; font-size: 9px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; }
 .drawer-backdrop { position: fixed; z-index: 40; inset: 0; border: 0; background: rgba(2,24,14,.5); }
 .modal-backdrop { position: fixed; z-index: 80; inset: 0; display: grid; place-items: center; padding: 24px; overflow-y: auto; background: rgba(2,24,14,.68); }
 .customer-modal { width: min(720px, 100%); max-height: calc(100vh - 48px); overflow-y: auto; border-radius: 13px; background: var(--paper); box-shadow: var(--shadow); }
@@ -262,6 +283,7 @@ button { cursor: pointer; }
   .pricing-preview { grid-template-columns: 1fr; }
   .pricing-example-fields { grid-template-columns: 1fr 1fr; }
   .pricing-example-fields .compact-check { align-self: end; }
+  .block-date-form { grid-template-columns: 1fr; }
   .modal-actions { flex-wrap: wrap; }
   .modal-spacer { display: none; }
   .modal-actions button { flex: 1 1 100%; }
@@ -272,8 +294,6 @@ button { cursor: pointer; }
 }
 
 </style>
-
-
   </head>
   <body>
     <div class="loading-screen" data-loading>
@@ -332,6 +352,7 @@ button { cursor: pointer; }
         <nav aria-label="Dashboard navigation">
           <a class="nav-link active" href="#calendar"><span class="nav-icon">&#9638;</span>Calendar</a>
           <a class="nav-link" href="#requests"><span class="nav-icon">&#9776;</span>Requests <b data-new-badge>0</b></a>
+          <a class="nav-link" href="#scheduling"><span class="nav-icon">&#8856;</span>Availability</a>
           <a class="nav-link" href="#customers"><span class="nav-icon">&#9823;</span>Customers <b data-customer-badge>0</b></a>
           <a class="nav-link" href="#pricing"><span class="nav-icon">$</span>Pricing</a>
         </nav>
@@ -380,6 +401,21 @@ button { cursor: pointer; }
           <div class="calendar-grid" data-calendar-grid></div>
         </section>
 
+        <section class="scheduling-card" id="scheduling">
+          <header class="scheduling-toolbar">
+            <div><p class="eyebrow">Booking controls</p><h2>Availability</h2><p>Jobs are morning-only, Sundays are closed, and each day is limited to eight bookings.</p></div>
+          </header>
+          <div class="scheduling-content">
+            <form class="block-date-form" data-block-date-form>
+              <label>Make a date unavailable<input type="date" name="serviceDate" required /></label>
+              <label>Reason (optional)<input type="text" name="reason" maxlength="160" placeholder="Vacation, weather, holiday..." /></label>
+              <button class="primary-button" type="submit">Block this date</button>
+            </form>
+            <p class="form-message" data-block-date-message></p>
+            <div class="blocked-date-list" data-blocked-date-list></div>
+          </div>
+        </section>
+
         <section class="customers-card" id="customers">
           <header class="customers-toolbar">
             <div><p class="eyebrow">Remembered customers</p><h2>Customer lawns</h2><p data-customer-summary>0 customers</p></div>
@@ -422,8 +458,8 @@ button { cursor: pointer; }
           <section class="detail-section" data-price-section hidden><h3>Lawn price</h3><p class="detail-price" data-detail-price>$0.00</p></section>
           <section class="detail-section" data-recurrence-section hidden><h3>Schedule</h3><p class="detail-recurrence" data-detail-recurrence></p></section>
           <section class="detail-section"><h3>Property notes</h3><p class="detail-notes" data-detail-notes></p></section>
-          <section class="detail-section" data-request-controls><label for="request-status">Update status</label><select id="request-status" data-detail-status-select><option value="new">New request</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select><button class="drawer-action" type="button" data-save-request-customer>Save as customer</button></section>
-          <section class="detail-section" data-customer-controls hidden><button class="drawer-action" type="button" data-edit-customer>Edit price or schedule</button></section>
+          <section class="detail-section" data-request-controls><label for="request-status">Update status</label><select id="request-status" data-detail-status-select><option value="new">New request</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select><button class="drawer-action" type="button" data-save-request-customer>Save as customer</button><button class="drawer-danger" type="button" data-delete-calendar-entry>Remove from calendar completely</button></section>
+          <section class="detail-section" data-customer-controls hidden><button class="drawer-action" type="button" data-edit-customer>Edit price or schedule</button><button class="drawer-danger" type="button" data-delete-calendar-entry>Remove from calendar completely</button></section>
         </div>
       </aside>
       <button class="drawer-backdrop" type="button" aria-label="Close request details" data-drawer-backdrop hidden></button>
@@ -446,7 +482,8 @@ button { cursor: pointer; }
           <label>Service address<input type="text" name="address" maxlength="180" required /></label>
           <div class="customer-form-row">
             <label>Service<select name="service" required><option value="Lawn mowing">Lawn mowing</option><option value="Edging and trimming">Edging and trimming</option><option value="Seasonal cleanup">Seasonal cleanup</option><option value="Multiple services">Multiple services</option></select></label>
-            <label>Preferred time<select name="preferredTime"><option value="Morning">Morning</option><option value="Afternoon">Afternoon</option><option value="Evening">Evening</option><option value="Any time">Any time</option></select></label>
+            <label>Service time<input type="text" value="Morning only" disabled /></label>
+            <input type="hidden" name="preferredTime" value="Morning" />
           </div>
           <div class="customer-form-row">
             <label>Price for this lawn ($)<input type="number" name="price" min="0" max="100000" step="0.01" inputmode="decimal" placeholder="45.00" required /></label>
@@ -456,20 +493,20 @@ button { cursor: pointer; }
           <label class="check-row"><input type="checkbox" name="active" checked /><span><strong>Active customer</strong><small>Turn this off to pause future calendar bookings without deleting the customer.</small></span></label>
           <label>Property notes<textarea name="notes" maxlength="2000" rows="4" placeholder="Gate access, mowing details, payment notes..."></textarea></label>
           <p class="form-message" data-customer-form-message></p>
-          <div class="modal-actions"><button class="danger-button" type="button" data-remove-customer hidden>Remove saved customer</button><span class="modal-spacer"></span><button class="secondary-button" type="button" data-cancel-customer>Cancel</button><button class="primary-button" type="submit">Save customer</button></div>
+          <div class="modal-actions"><button class="danger-button" type="button" data-remove-customer hidden>Remove customer completely</button><span class="modal-spacer"></span><button class="secondary-button" type="button" data-cancel-customer>Cancel</button><button class="primary-button" type="submit">Save customer</button></div>
         </form>
       </section>
     </div>
 
     <div class="toast" role="status" aria-live="polite" data-toast></div>
-<script>
+    <script>
 window.DASHBOARD_CONFIG = {
   supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
   supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
 };
 
 </script>
-<script>
+    <script>
 const config = window.DASHBOARD_CONFIG || {};
 const isConfigured = Boolean(config.supabaseUrl && config.supabaseAnonKey);
 
@@ -489,6 +526,9 @@ const elements = {
   prevMonth: document.querySelector("[data-prev-month]"),
   nextMonth: document.querySelector("[data-next-month]"),
   jumpToday: document.querySelector("[data-jump-today]"),
+  blockDateForm: document.querySelector("[data-block-date-form]"),
+  blockDateMessage: document.querySelector("[data-block-date-message]"),
+  blockedDateList: document.querySelector("[data-blocked-date-list]"),
   search: document.querySelector("[data-search]"),
   statusFilter: document.querySelector("[data-status-filter]"),
   newBadge: document.querySelector("[data-new-badge]"),
@@ -534,6 +574,7 @@ const elements = {
   customerForm: document.querySelector("[data-customer-form]"),
   customerFormMessage: document.querySelector("[data-customer-form-message]"),
   removeCustomer: document.querySelector("[data-remove-customer]"),
+  deleteCalendarEntryButtons: document.querySelectorAll("[data-delete-calendar-entry]"),
   pricingForm: document.querySelector("[data-pricing-form]"),
   pricingMessage: document.querySelector("[data-pricing-message]"),
   pricingPreview: document.querySelector("[data-pricing-preview]"),
@@ -547,6 +588,7 @@ const state = {
   currentMonth: new Date(today.getFullYear(), today.getMonth(), 1),
   requests: [],
   customers: [],
+  blockedDates: [],
   pricing: null,
   selectedId: null,
   selectedType: null,
@@ -577,8 +619,8 @@ const createDemoRequests = () => {
   const makeDate = (day) => dateKey(new Date(today.getFullYear(), today.getMonth(), day));
   return [
     { id: "demo-1", first_name: "Maria", last_name: "Santos", phone: "(555) 014-2044", email: "maria@example.com", address: "184 Palm View Drive", requested_date: makeDate(Math.min(5, 25)), preferred_time: "Morning", service: "Lawn mowing", notes: "Front and back yard. Gate is on the left side.", status: "new", created_at: new Date().toISOString() },
-    { id: "demo-2", first_name: "James", last_name: "Walker", phone: "(555) 011-8820", email: "james@example.com", address: "922 Lake Ridge Way", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Afternoon", service: "Edging and trimming", notes: "Please focus on the driveway edges and hedges near the porch.", status: "scheduled", created_at: new Date().toISOString() },
-    { id: "demo-3", first_name: "Alicia", last_name: "Brown", phone: "(555) 016-7781", email: "alicia@example.com", address: "47 Sunshine Court", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Any time", service: "Multiple services", notes: "Seasonal cleanup plus mowing. There are leaves behind the shed.", status: "new", created_at: new Date().toISOString() },
+    { id: "demo-2", first_name: "James", last_name: "Walker", phone: "(555) 011-8820", email: "james@example.com", address: "922 Lake Ridge Way", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Morning", service: "Edging and trimming", notes: "Please focus on the driveway edges and hedges near the porch.", status: "scheduled", created_at: new Date().toISOString() },
+    { id: "demo-3", first_name: "Alicia", last_name: "Brown", phone: "(555) 016-7781", email: "alicia@example.com", address: "47 Sunshine Court", requested_date: makeDate(Math.min(12, 25)), preferred_time: "Morning", service: "Multiple services", notes: "Seasonal cleanup plus mowing. There are leaves behind the shed.", status: "new", created_at: new Date().toISOString() },
     { id: "demo-4", first_name: "Robert", last_name: "Green", phone: "(555) 018-3402", email: "robert@example.com", address: "611 Gardenia Avenue", requested_date: makeDate(Math.min(19, 25)), preferred_time: "Morning", service: "Seasonal cleanup", notes: "Cleanup around the flower beds and fence line.", status: "completed", created_at: new Date().toISOString() }
   ];
 };
@@ -643,13 +685,15 @@ const loadData = async () => {
   const responses = await Promise.all([
     fetch(config.supabaseUrl + "/rest/v1/service_requests?select=*&order=requested_date.asc,created_at.asc", { headers: apiHeaders() }),
     fetch(config.supabaseUrl + "/rest/v1/customers?select=*&order=last_name.asc,first_name.asc", { headers: apiHeaders() }),
-    fetch(config.supabaseUrl + "/rest/v1/pricing_settings?select=*&id=eq.1", { headers: apiHeaders() })
+    fetch(config.supabaseUrl + "/rest/v1/pricing_settings?select=*&id=eq.1", { headers: apiHeaders() }),
+    fetch(config.supabaseUrl + "/rest/v1/blocked_service_dates?select=*&order=service_date.asc", { headers: apiHeaders() })
   ]);
-  if (!responses[0].ok || !responses[1].ok || !responses[2].ok) throw new Error("Dashboard data could not be loaded");
+  if (responses.some((response) => !response.ok)) throw new Error("Dashboard data could not be loaded");
   state.requests = await responses[0].json();
   state.customers = await responses[1].json();
   const pricingRows = await responses[2].json();
   state.pricing = pricingRows[0] || null;
+  state.blockedDates = await responses[3].json();
 };
 
 const legacyFilteredRequests = () => state.requests.filter((request) => {
@@ -737,6 +781,11 @@ const filteredRequests = () => state.requests.filter((request) => {
 });
 
 const filteredCustomers = () => state.customers.filter(matchesQuery);
+const addressRouteKey = (address = "") => {
+  const zip = address.match(/\b\d{5}(?:-\d{4})?\b/);
+  const street = address.toLowerCase().replace(/^\s*\d+[a-z-]*\s*/, "").replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+  return (zip ? zip[0].slice(0, 5) : "zzzzz") + "|" + street;
+};
 
 const recurringEntries = (rangeStart, rangeEnd) => {
   if (!["all", "scheduled"].includes(state.filter)) return [];
@@ -749,7 +798,9 @@ const recurringEntries = (rangeStart, rangeEnd) => {
       cursor.setDate(cursor.getDate() + Math.ceil(elapsedDays / intervalDays) * intervalDays);
     }
     while (cursor <= rangeEnd) {
-      entries.push({ kind: "customer", id: customer.id, date: dateKey(cursor), customer });
+      const occurrenceDate = dateKey(cursor);
+      const unavailable = cursor.getDay() === 0 || state.blockedDates.some((blocked) => blocked.service_date === occurrenceDate);
+      if (!unavailable) entries.push({ kind: "customer", id: customer.id, date: occurrenceDate, customer });
       cursor.setDate(cursor.getDate() + intervalDays);
     }
   });
@@ -799,15 +850,28 @@ const renderCalendar = () => {
     const date = new Date(gridStart);
     date.setDate(gridStart.getDate() + index);
     const key = dateKey(date);
-    const dayEntries = entries.filter((entry) => entry.date === key);
+    const dayEntries = entries.filter((entry) => entry.date === key).sort((left, right) => {
+      const leftItem = left.kind === "request" ? left.request : left.customer;
+      const rightItem = right.kind === "request" ? right.request : right.customer;
+      return addressRouteKey(leftItem.address).localeCompare(addressRouteKey(rightItem.address));
+    });
+    const blockedDate = state.blockedDates.find((blocked) => blocked.service_date === key);
     const cell = document.createElement("div");
     cell.className = "day-cell";
     if (date.getMonth() !== month) cell.classList.add("outside");
     if (key === dateKey(today)) cell.classList.add("today");
+    if (date.getDay() === 0) cell.classList.add("sunday-closed");
+    if (blockedDate) cell.classList.add("unavailable-day");
     const number = document.createElement("span");
     number.className = "day-number";
     number.textContent = date.getDate();
     cell.append(number);
+    if (date.getDay() === 0 || blockedDate) {
+      const closed = document.createElement("span");
+      closed.className = "closed-label";
+      closed.textContent = blockedDate ? (blockedDate.reason || "Unavailable") : "Closed";
+      cell.append(closed);
+    }
     const events = document.createElement("div");
     events.className = "day-events";
     dayEntries.slice(0, 3).forEach((entry) => {
@@ -822,7 +886,9 @@ const renderCalendar = () => {
       name.textContent = customerName(item);
       const service = document.createElement("span");
       service.textContent = item.service;
-      button.append(name, service);
+      const route = document.createElement("span");
+      route.textContent = item.address;
+      button.append(name, service, route);
       if (entry.kind === "customer") {
         const price = document.createElement("span");
         price.className = "event-price";
@@ -894,6 +960,34 @@ const renderCustomers = () => {
   });
 };
 
+const renderBlockedDates = () => {
+  elements.blockedDateList.innerHTML = "";
+  const upcoming = state.blockedDates.filter((blocked) => blocked.service_date >= dateKey(today));
+  if (!upcoming.length) {
+    const empty = document.createElement("p");
+    empty.className = "blocked-date-empty";
+    empty.textContent = "No upcoming dates are blocked. Sundays remain closed automatically.";
+    elements.blockedDateList.append(empty);
+    return;
+  }
+  upcoming.forEach((blocked) => {
+    const row = document.createElement("article");
+    row.className = "blocked-date-row";
+    const details = document.createElement("p");
+    const date = document.createElement("strong");
+    date.textContent = formatDate(blocked.service_date);
+    const reason = document.createElement("span");
+    reason.textContent = blocked.reason || "Unavailable for bookings";
+    details.append(date, reason);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.dataset.unblockDate = blocked.service_date;
+    remove.textContent = "Make available";
+    row.append(details, remove);
+    elements.blockedDateList.append(row);
+  });
+};
+
 const pricingFormField = (name) => elements.pricingForm.elements.namedItem(name);
 
 const calculatePricingPreview = () => {
@@ -921,6 +1015,7 @@ const renderPricing = () => {
 const render = () => {
   renderStats();
   renderCalendar();
+  renderBlockedDates();
   renderCustomers();
   renderPricing();
 };
@@ -937,7 +1032,7 @@ const openRequest = (id) => {
   elements.detailStatus.className = `status-pill status-${request.status}`;
   elements.detailCreated.textContent = `Received ${new Date(request.created_at).toLocaleDateString()}`;
   elements.detailDate.textContent = formatDate(request.requested_date);
-  elements.detailTime.textContent = request.preferred_time || "Time not specified";
+  elements.detailTime.textContent = "Morning";
   elements.detailName.textContent = `${request.first_name} ${request.last_name}`;
   elements.detailPhone.textContent = request.phone;
   elements.detailPhone.href = `tel:${request.phone}`;
@@ -984,7 +1079,7 @@ const openCustomer = (id, occurrenceDate = null) => {
   elements.detailStatus.className = "status-pill status-" + (customer.active ? "scheduled" : "cancelled");
   elements.detailCreated.textContent = "Customer since " + new Date(customer.created_at).toLocaleDateString();
   elements.detailDate.textContent = occurrenceDate ? formatDate(occurrenceDate) : customer.recurrence_start ? formatDate(customer.recurrence_start) : "No booking date";
-  elements.detailTime.textContent = customer.preferred_time || "Any time";
+  elements.detailTime.textContent = "Morning";
   elements.detailName.textContent = customerName(customer);
   setContactLink(elements.detailPhone, customer.phone, "tel");
   setContactLink(elements.detailEmail, customer.email, "mailto");
@@ -1034,7 +1129,7 @@ const openCustomerModal = (customer = null, sourceRequest = null) => {
   customerFormField("email").value = customer ? customer.email : sourceRequest ? sourceRequest.email : "";
   customerFormField("address").value = customer ? customer.address : sourceRequest ? sourceRequest.address : "";
   customerFormField("service").value = customer ? customer.service : sourceRequest ? sourceRequest.service : "Lawn mowing";
-  customerFormField("preferredTime").value = customer ? customer.preferred_time : sourceRequest ? sourceRequest.preferred_time : "Any time";
+  customerFormField("preferredTime").value = "Morning";
   customerFormField("price").value = customer
     ? (Number(customer.price_cents || 0) / 100).toFixed(2)
     : sourceRequest && sourceRequest.estimated_price_cents
@@ -1067,6 +1162,14 @@ const saveCustomer = async (event) => {
     elements.customerFormMessage.textContent = "Choose the first service date for the two-week schedule.";
     return;
   }
+  if (recurring && parseDate(recurrenceStart).getDay() === 0) {
+    elements.customerFormMessage.textContent = "Sunday is closed. Choose a Monday through Saturday start date.";
+    return;
+  }
+  if (recurring && state.blockedDates.some((blocked) => blocked.service_date === recurrenceStart)) {
+    elements.customerFormMessage.textContent = "That date is marked unavailable. Choose another start date.";
+    return;
+  }
   const payload = {
     first_name: customerFormField("firstName").value.trim(),
     last_name: customerFormField("lastName").value.trim(),
@@ -1074,7 +1177,7 @@ const saveCustomer = async (event) => {
     email: customerFormField("email").value.trim().toLowerCase(),
     address: customerFormField("address").value.trim(),
     service: customerFormField("service").value,
-    preferred_time: customerFormField("preferredTime").value,
+    preferred_time: "Morning",
     price_cents: Math.round(Number(customerFormField("price").value || 0) * 100),
     recurring,
     recurrence_weeks: 2,
@@ -1132,34 +1235,129 @@ const saveCustomer = async (event) => {
   }
 };
 
+const deleteCalendarRecord = async ({ requestId = null, customerId = null }) => {
+  if (!state.demoMode) {
+    const response = await fetch(config.supabaseUrl + "/rest/v1/rpc/delete_calendar_entry", {
+      method: "POST",
+      headers: { ...apiHeaders(), Prefer: "return=minimal" },
+      body: JSON.stringify({ request_id_input: requestId, customer_id_input: customerId })
+    });
+    if (!response.ok) throw new Error("Calendar entry could not be removed");
+  }
+
+  if (customerId) {
+    const customer = state.customers.find((item) => item.id === customerId);
+    const linkedRequestId = customer ? customer.source_request_id : null;
+    state.customers = state.customers.filter((item) => item.id !== customerId);
+    if (linkedRequestId) state.requests = state.requests.filter((item) => item.id !== linkedRequestId);
+  }
+  if (requestId) {
+    state.customers = state.customers.filter((item) => item.source_request_id !== requestId);
+    state.requests = state.requests.filter((item) => item.id !== requestId);
+  }
+};
+
 const removeSavedCustomer = async () => {
   const id = customerFormField("id").value;
   const customer = state.customers.find((item) => item.id === id);
   if (!customer) return;
   const approved = window.confirm(
-    "Remove " + customerName(customer) + " from saved customers? Their repeating calendar bookings will also be removed. Original service request history will remain."
+    "Remove " + customerName(customer) + " completely? Their customer record, repeating jobs, and linked original request will be permanently deleted."
   );
   if (!approved) return;
   elements.removeCustomer.disabled = true;
   elements.removeCustomer.textContent = "Removing...";
   try {
-    if (!state.demoMode) {
-      const response = await fetch(config.supabaseUrl + "/rest/v1/customers?id=eq." + encodeURIComponent(id), {
-        method: "DELETE",
-        headers: { ...apiHeaders(), Prefer: "return=minimal" }
-      });
-      if (!response.ok) throw new Error("Customer could not be removed");
-    }
-    state.customers = state.customers.filter((item) => item.id !== id);
+    await deleteCalendarRecord({ customerId: id });
     closeCustomerModal();
     closeDrawer();
     render();
-    showToast("Customer and repeating bookings removed");
+    showToast("Customer removed completely");
   } catch (error) {
     elements.customerFormMessage.textContent = "This customer could not be removed. Please try again.";
   } finally {
     elements.removeCustomer.disabled = false;
-    elements.removeCustomer.textContent = "Remove saved customer";
+    elements.removeCustomer.textContent = "Remove customer completely";
+  }
+};
+
+const deleteSelectedCalendarEntry = async () => {
+  const type = state.selectedType;
+  const id = state.selectedId;
+  if (!type || !id) return;
+  const item = type === "request"
+    ? state.requests.find((request) => request.id === id)
+    : state.customers.find((customer) => customer.id === id);
+  if (!item) return;
+  const approved = window.confirm(
+    "Permanently remove " + customerName(item) + " from the calendar? This cannot be undone."
+  );
+  if (!approved) return;
+  elements.deleteCalendarEntryButtons.forEach((button) => { button.disabled = true; });
+  try {
+    await deleteCalendarRecord(type === "request" ? { requestId: id } : { customerId: id });
+    closeDrawer();
+    render();
+    showToast("Calendar entry removed permanently");
+  } catch (error) {
+    showToast("Calendar entry could not be removed");
+  } finally {
+    elements.deleteCalendarEntryButtons.forEach((button) => { button.disabled = false; });
+  }
+};
+
+const blockServiceDate = async (event) => {
+  event.preventDefault();
+  const serviceDate = elements.blockDateForm.elements.namedItem("serviceDate").value;
+  const reason = elements.blockDateForm.elements.namedItem("reason").value.trim();
+  const button = elements.blockDateForm.querySelector("button[type=submit]");
+  elements.blockDateMessage.textContent = "";
+  if (parseDate(serviceDate).getDay() === 0) {
+    elements.blockDateMessage.textContent = "Sundays are already closed automatically.";
+    return;
+  }
+  button.disabled = true;
+  button.textContent = "Blocking...";
+  try {
+    let saved = { service_date: serviceDate, reason, created_at: new Date().toISOString() };
+    if (!state.demoMode) {
+      const response = await fetch(config.supabaseUrl + "/rest/v1/blocked_service_dates?on_conflict=service_date", {
+        method: "POST",
+        headers: { ...apiHeaders(), Prefer: "return=representation,resolution=merge-duplicates" },
+        body: JSON.stringify(saved)
+      });
+      if (!response.ok) throw new Error("Date could not be blocked");
+      const rows = await response.json();
+      if (rows.length) saved = rows[0];
+    }
+    state.blockedDates = state.blockedDates.filter((blocked) => blocked.service_date !== serviceDate);
+    state.blockedDates.push(saved);
+    state.blockedDates.sort((left, right) => left.service_date.localeCompare(right.service_date));
+    elements.blockDateForm.reset();
+    render();
+    showToast("Date marked unavailable");
+  } catch (error) {
+    elements.blockDateMessage.textContent = "This date could not be blocked. Please try again.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Block this date";
+  }
+};
+
+const unblockServiceDate = async (serviceDate) => {
+  try {
+    if (!state.demoMode) {
+      const response = await fetch(config.supabaseUrl + "/rest/v1/blocked_service_dates?service_date=eq." + encodeURIComponent(serviceDate), {
+        method: "DELETE",
+        headers: { ...apiHeaders(), Prefer: "return=minimal" }
+      });
+      if (!response.ok) throw new Error("Date could not be made available");
+    }
+    state.blockedDates = state.blockedDates.filter((blocked) => blocked.service_date !== serviceDate);
+    render();
+    showToast("Date is available again");
+  } catch (error) {
+    showToast("Availability could not be changed");
   }
 };
 
@@ -1305,8 +1503,9 @@ elements.demo.addEventListener("click", () => {
   state.requests = createDemoRequests();
   state.customers = [
     { id: "demo-customer-1", first_name: "Maria", last_name: "Santos", phone: "(555) 014-2044", email: "maria@example.com", address: "184 Palm View Drive", service: "Lawn mowing", preferred_time: "Morning", price_cents: 4500, recurring: true, recurrence_weeks: 2, recurrence_start: dateKey(new Date(today.getFullYear(), today.getMonth(), 5)), active: true, notes: "Front and back yard. Gate is on the left side.", created_at: new Date().toISOString(), source_request_id: null },
-    { id: "demo-customer-2", first_name: "James", last_name: "Walker", phone: "(555) 011-8820", email: "james@example.com", address: "922 Lake Ridge Way", service: "Edging and trimming", preferred_time: "Afternoon", price_cents: 6000, recurring: true, recurrence_weeks: 2, recurrence_start: dateKey(new Date(today.getFullYear(), today.getMonth(), 9)), active: true, notes: "Driveway edges and hedges near the porch.", created_at: new Date().toISOString(), source_request_id: null }
+    { id: "demo-customer-2", first_name: "James", last_name: "Walker", phone: "(555) 011-8820", email: "james@example.com", address: "922 Lake Ridge Way", service: "Edging and trimming", preferred_time: "Morning", price_cents: 6000, recurring: true, recurrence_weeks: 2, recurrence_start: dateKey(new Date(today.getFullYear(), today.getMonth(), 9)), active: true, notes: "Driveway edges and hedges near the porch.", created_at: new Date().toISOString(), source_request_id: null }
   ];
+  state.blockedDates = [];
   state.pricing = { id: 1, minimum_price_cents: 4000, base_price_cents: 2000, price_per_acre_cents: 34800, price_per_1000_sqft_cents: 800, fence_fee_cents: 1000, obstruction_fee_cents: 500 };
   showApp("Preview Owner");
 });
@@ -1320,6 +1519,7 @@ elements.logout.addEventListener("click", async () => {
   state.demoMode = false;
   state.requests = [];
   state.customers = [];
+  state.blockedDates = [];
   state.pricing = null;
   closeDrawer();
   closeCustomerModal();
@@ -1360,11 +1560,18 @@ elements.editCustomer.addEventListener("click", () => {
 elements.closeCustomerModal.addEventListener("click", closeCustomerModal);
 elements.cancelCustomer.addEventListener("click", closeCustomerModal);
 elements.removeCustomer.addEventListener("click", removeSavedCustomer);
+elements.deleteCalendarEntryButtons.forEach((button) => button.addEventListener("click", deleteSelectedCalendarEntry));
+elements.blockDateForm.addEventListener("submit", blockServiceDate);
+elements.blockedDateList.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-unblock-date]");
+  if (button) unblockServiceDate(button.dataset.unblockDate);
+});
 elements.customerModal.addEventListener("click", (event) => { if (event.target === elements.customerModal) closeCustomerModal(); });
 customerFormField("recurring").addEventListener("change", () => { customerFormField("recurrenceStart").required = customerFormField("recurring").checked; });
 elements.customerForm.addEventListener("submit", saveCustomer);
 elements.pricingForm.addEventListener("input", calculatePricingPreview);
 elements.pricingForm.addEventListener("submit", savePricing);
+elements.blockDateForm.elements.namedItem("serviceDate").min = dateKey(today);
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") return;
   if (!elements.customerModal.hidden) closeCustomerModal();
@@ -1391,4 +1598,3 @@ document.addEventListener("keydown", (event) => {
 </script>
   </body>
 </html>
-
