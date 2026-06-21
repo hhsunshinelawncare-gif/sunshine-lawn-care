@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -209,6 +209,15 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
 .quote-note p { display: flex; flex-direction: column; margin: 0; }
 .quote-note small { color: rgba(255,255,255,.55); }
 .quote-form { padding: 36px; color: var(--ink); background: white; border-radius: 10px; box-shadow: var(--shadow); }
+.booking-start { margin-bottom: 22px; padding: 20px; border: 1px solid #cbdccc; border-radius: 9px; background: #f3f8f2; }
+.booking-step { margin: 0 0 14px; color: var(--forest-700); font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+.availability-actions { display: flex; align-items: center; gap: 14px; margin: -4px 0 16px; }
+.availability-actions button { flex: none; min-height: 42px; padding: 0 15px; border: 0; border-radius: 6px; color: white; background: var(--forest-800); font-size: 9px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; }
+.availability-actions button:disabled { opacity: .6; }
+.availability-actions p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+.morning-note { margin: -5px 0 0; color: var(--forest-700); font-size: 10px; font-weight: 800; }
+.booking-details { min-width: 0; margin: 0; padding: 0; border: 0; transition: opacity 160ms ease; }
+.booking-details:disabled { opacity: .48; }
 .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .quote-form label { display: grid; gap: 7px; margin-bottom: 16px; font-size: 11px; font-weight: 900; letter-spacing: .8px; text-transform: uppercase; }
 .quote-form input, .quote-form select, .quote-form textarea { width: 100%; border: 1px solid #d8ddd9; border-radius: 6px; padding: 13px 14px; background: #fbfcf9; color: var(--ink); font-size: 14px; text-transform: none; letter-spacing: 0; outline: none; transition: border 160ms ease, box-shadow 160ms ease; }
@@ -295,6 +304,8 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
   .process-step { min-height: 220px; }
   .quote-section { padding: 90px 0; }
   .field-row { grid-template-columns: 1fr; gap: 0; }
+  .availability-actions { align-items: stretch; flex-direction: column; }
+  .availability-actions button { width: 100%; }
   .estimate-box { align-items: stretch; flex-direction: column; }
   .estimate-box button { width: 100%; }
   .quote-form { padding: 25px 20px; }
@@ -310,8 +321,6 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
 }
 
 </style>
-
-
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -498,6 +507,21 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
           </div>
 
           <form class="quote-form reveal reveal-late" data-quote-form>
+            <div class="booking-start">
+              <p class="booking-step">Start here to see open mornings</p>
+              <label>Full service address<input type="text" name="address" autocomplete="street-address" placeholder="Street, city, state, and ZIP" maxlength="180" required /></label>
+              <div class="availability-actions">
+                <button type="button" data-find-dates>Show available dates</button>
+                <p role="status" aria-live="polite" data-availability-status>Enter the property address to find open mornings near other scheduled jobs.</p>
+              </div>
+              <label>Available morning dates
+                <select name="requestedDate" disabled required>
+                  <option value="" selected>Enter the address first</option>
+                </select>
+              </label>
+              <p class="morning-note">All lawn-care jobs are scheduled in the morning. Sundays are closed.</p>
+            </div>
+            <fieldset class="booking-details" data-booking-details disabled>
             <div class="field-row">
               <label>First name<input type="text" name="firstName" autocomplete="given-name" placeholder="Your first name" required /></label>
               <label>Last name<input type="text" name="lastName" autocomplete="family-name" placeholder="Your last name" required /></label>
@@ -506,7 +530,6 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
               <label>Phone<input type="tel" name="phone" autocomplete="tel" placeholder="(555) 555-5555" required /></label>
               <label>Email<input type="email" name="email" autocomplete="email" placeholder="you@example.com" required /></label>
             </div>
-            <label>Service address<input type="text" name="address" autocomplete="street-address" placeholder="Street address" maxlength="180" required /></label>
             <div class="field-row">
               <label>Approximate lawn size (acres)<input type="number" name="lawnSizeAcres" min="0.01" max="1000" step="0.01" inputmode="decimal" placeholder="Example: 0.25" required /></label>
               <label>Is the lawn fenced?
@@ -534,18 +557,6 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
               <div><small>Average price calculator</small><strong data-estimate-price>Enter your lawn details</strong><p data-estimate-range>We will show an estimated range before you send the request.</p></div>
               <button type="button" data-calculate-estimate>Calculate average</button>
             </div>
-            <div class="field-row">
-              <label>Preferred service date<input type="date" name="requestedDate" required /></label>
-              <label>Best time to reach you
-                <select name="preferredTime" required>
-                  <option value="" selected disabled>Select a time</option>
-                  <option>Morning</option>
-                  <option>Afternoon</option>
-                  <option>Evening</option>
-                  <option>Any time</option>
-                </select>
-              </label>
-            </div>
             <label>What can we help with?
               <select name="service" required>
                 <option value="" selected disabled>Select a service</option>
@@ -558,6 +569,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
             <label>Property notes<textarea name="notes" rows="3" placeholder="Tell us a little about your lawn"></textarea></label>
             <label class="form-trap" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
             <button class="button form-button" type="submit">Request my free estimate <span aria-hidden="true">&#8594;</span></button>
+            </fieldset>
             <p class="form-status" role="status" aria-live="polite" data-form-status></p>
           </form>
         </div>
@@ -578,14 +590,14 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
         <p>Fresh lawns. Brighter days.</p>
       </div>
     </footer>
-<script>
+    <script>
 window.REQUEST_CONFIG = {
   supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
   supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
 };
 
 </script>
-<script>
+    <script>
 const header = document.querySelector("[data-header]");
 const menuButton = document.querySelector(".menu-toggle");
 const nav = document.querySelector(".site-nav");
@@ -630,6 +642,10 @@ document.querySelectorAll(".reveal").forEach((element) => revealObserver.observe
 
 const requestConfig = window.REQUEST_CONFIG || {};
 const requestedDate = form.querySelector("[name=requestedDate]");
+const addressInput = form.querySelector("[name=address]");
+const bookingDetails = form.querySelector("[data-booking-details]");
+const findDatesButton = form.querySelector("[data-find-dates]");
+const availabilityStatus = form.querySelector("[data-availability-status]");
 const lawnSizeInput = form.querySelector("[name=lawnSizeAcres]");
 const fenceInput = form.querySelector("[name=hasFence]");
 const obstructionInput = form.querySelector("[name=obstructionCount]");
@@ -637,10 +653,18 @@ const obstructionDetailsInput = form.querySelector("[name=obstructionDetails]");
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 let latestEstimateKey = "";
 let estimateTimer;
+let availabilityAddress = "";
 
 const today = new Date();
 today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-requestedDate.min = today.toISOString().slice(0, 10);
+const tomorrow = new Date(today);
+tomorrow.setDate(tomorrow.getDate() + 1);
+const tomorrowKey = tomorrow.toISOString().slice(0, 10);
+const formatDateOption = (value) => new Date(value + "T12:00:00").toLocaleDateString("en-US", {
+  weekday: "long",
+  month: "long",
+  day: "numeric"
+});
 
 const estimateKey = () => [lawnSizeInput.value, fenceInput.value, obstructionInput.value].join("|");
 
@@ -648,6 +672,66 @@ const syncObstructionRequirement = () => {
   const hasObstructions = Number(obstructionInput.value) > 0;
   obstructionDetailsInput.required = hasObstructions;
   obstructionDetailsInput.setAttribute("aria-required", String(hasObstructions));
+};
+
+const resetAvailability = () => {
+  availabilityAddress = "";
+  requestedDate.innerHTML = '<option value="" selected>Enter the address first</option>';
+  requestedDate.disabled = true;
+  bookingDetails.disabled = true;
+  availabilityStatus.textContent = "Enter the property address to find open mornings near other scheduled jobs.";
+};
+
+const loadAvailability = async () => {
+  const address = addressInput.value.trim();
+  if (address.length < 6) {
+    availabilityStatus.textContent = "Enter the full service address, including city and ZIP when possible.";
+    addressInput.focus();
+    return false;
+  }
+  if (!requestConfig.supabaseUrl || !requestConfig.supabaseAnonKey) {
+    availabilityStatus.textContent = "Online scheduling is being connected. Please try again shortly.";
+    return false;
+  }
+
+  findDatesButton.disabled = true;
+  findDatesButton.textContent = "Checking...";
+  availabilityStatus.textContent = "Finding open mornings and the closest route matches...";
+  try {
+    const response = await fetch(requestConfig.supabaseUrl + "/rest/v1/rpc/get_available_service_dates", {
+      method: "POST",
+      headers: {
+        apikey: requestConfig.supabaseAnonKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ address_input: address, start_date_input: tomorrowKey })
+    });
+    if (!response.ok) throw new Error("Available dates could not be loaded");
+    const dates = await response.json();
+    if (!dates.length) throw new Error("No open dates were returned");
+
+    requestedDate.innerHTML = '<option value="" selected disabled>Choose an open morning</option>';
+    dates.forEach((date) => {
+      const option = document.createElement("option");
+      option.value = date.service_date;
+      const routeNote = date.recommended ? "Best route match - " : "";
+      const spots = Number(date.spots_left) === 1 ? "1 spot left" : date.spots_left + " spots left";
+      option.textContent = routeNote + formatDateOption(date.service_date) + " - " + spots;
+      requestedDate.append(option);
+    });
+    availabilityAddress = address.toLowerCase();
+    requestedDate.disabled = false;
+    bookingDetails.disabled = false;
+    availabilityStatus.textContent = "Choose one of these open mornings. Best route matches group nearby properties together.";
+    return true;
+  } catch (error) {
+    resetAvailability();
+    availabilityStatus.textContent = "Available dates could not be loaded. Please check the address and try again.";
+    return false;
+  } finally {
+    findDatesButton.disabled = false;
+    findDatesButton.textContent = "Show available dates";
+  }
 };
 
 const resetEstimate = () => {
@@ -705,6 +789,10 @@ const calculateEstimate = async (showPrompt = true) => {
 };
 
 calculateEstimateButton.addEventListener("click", () => calculateEstimate(true));
+findDatesButton.addEventListener("click", loadAvailability);
+addressInput.addEventListener("input", () => {
+  if (availabilityAddress && addressInput.value.trim().toLowerCase() !== availabilityAddress) resetAvailability();
+});
 [lawnSizeInput, fenceInput, obstructionInput].forEach((field) => {
   field.addEventListener("change", () => {
     syncObstructionRequirement();
@@ -713,10 +801,15 @@ calculateEstimateButton.addEventListener("click", () => calculateEstimate(true))
   });
 });
 syncObstructionRequirement();
+resetAvailability();
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
+  if (bookingDetails.disabled || !requestedDate.value) {
+    await loadAvailability();
+    return;
+  }
   if (form.elements.website.value) return;
 
   const submitButton = form.querySelector("button[type=submit]");
@@ -745,7 +838,7 @@ form.addEventListener("submit", async (event) => {
     obstruction_count: Number(data.get("obstructionCount")),
     obstruction_details: String(data.get("obstructionDetails")).trim(),
     requested_date: String(data.get("requestedDate")),
-    preferred_time: String(data.get("preferredTime")),
+    preferred_time: "Morning",
     service: String(data.get("service")),
     notes: String(data.get("notes")).trim()
   };
@@ -761,15 +854,22 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify(request)
     });
 
-    if (!response.ok) throw new Error("Request could not be saved");
+    if (!response.ok) {
+      const problem = await response.json().catch(() => ({}));
+      throw new Error(problem.message || "Request could not be saved");
+    }
 
     form.reset();
-    requestedDate.min = today.toISOString().slice(0, 10);
+    resetAvailability();
     syncObstructionRequirement();
     resetEstimate();
     formStatus.textContent = "Thank you! Your request is on our calendar for review.";
   } catch (error) {
-    formStatus.textContent = "We could not send your request. Please try again.";
+    const schedulingConflict = /Sunday|unavailable|eight-job limit/i.test(error.message);
+    formStatus.textContent = schedulingConflict
+      ? "That morning is no longer available. Check the address again to choose another date."
+      : "We could not send your request. Please try again.";
+    if (schedulingConflict) resetAvailability();
   } finally {
     submitButton.disabled = false;
     submitButton.innerHTML = originalLabel;
@@ -779,4 +879,3 @@ form.addEventListener("submit", async (event) => {
 </script>
   </body>
 </html>
-
