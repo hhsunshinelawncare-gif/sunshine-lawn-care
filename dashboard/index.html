@@ -225,6 +225,9 @@ button { cursor: pointer; }
 .detail-section dd a { color: var(--green-700); }
 .detail-notes { margin: 0; color: #4f5e55; font-size: 13px; line-height: 1.65; }
 .detail-price { margin: 0; color: var(--green-700); font-family: Georgia, serif; font-size: 32px; font-weight: 800; }
+.agreement-detail { padding: 18px; border: 1px solid #d3e3d5; border-radius: 8px; background: #f2f8f2; }
+.agreement-detail h3 { color: var(--green-700); }
+.agreement-summary { margin: 0 0 15px; color: var(--ink); font-size: 12px; font-weight: 800; line-height: 1.55; }
 .detail-recurrence { margin: 0; color: #4f5e55; font-size: 13px; line-height: 1.6; }
 .detail-section select { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 7px; background: white; outline: none; }
 .drawer-action { width: 100%; min-height: 45px; margin-top: 12px; border: 0; border-radius: 7px; color: var(--green-950); background: var(--sun); font-size: 10px; font-weight: 900; letter-spacing: .7px; text-transform: uppercase; }
@@ -304,6 +307,14 @@ button { cursor: pointer; }
 }
 
 </style>
+    <script>
+window.DASHBOARD_CONFIG = {
+  supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
+  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq",
+  emailAlertsEnabled: true
+};
+
+</script>
   </head>
   <body>
     <div class="loading-screen" data-loading>
@@ -473,6 +484,7 @@ button { cursor: pointer; }
           <section class="detail-section"><h3>When</h3><div class="detail-highlight"><span class="detail-date-icon">&#9638;</span><p><strong data-detail-date></strong><small data-detail-time></small></p></div></section>
           <section class="detail-section"><h3>Customer</h3><dl><div><dt>Name</dt><dd data-detail-name></dd></div><div><dt>Phone</dt><dd><a data-detail-phone></a></dd></div><div><dt>Email</dt><dd><a data-detail-email></a></dd></div><div><dt>Address</dt><dd data-detail-address></dd></div></dl></section>
           <section class="detail-section" data-property-section hidden><h3>Lawn details</h3><dl><div><dt>Size</dt><dd data-detail-lawn-size></dd></div><div><dt>Fence</dt><dd data-detail-fence></dd></div><div><dt>Obstacles</dt><dd data-detail-obstructions></dd></div><div><dt>Estimate</dt><dd data-detail-estimate></dd></div></dl></section>
+          <section class="detail-section agreement-detail" data-pricing-agreement-section hidden><h3>Customer price agreement</h3><p class="agreement-summary" data-detail-pricing-agreement></p><dl><div><dt>Signed by</dt><dd data-detail-pricing-signature></dd></div><div><dt>Agreed</dt><dd data-detail-pricing-agreed-at></dd></div></dl></section>
           <section class="detail-section" data-price-section hidden><h3>Lawn price</h3><p class="detail-price" data-detail-price>$0.00</p></section>
           <section class="detail-section" data-recurrence-section hidden><h3>Schedule</h3><p class="detail-recurrence" data-detail-recurrence></p></section>
           <section class="detail-section"><h3>Property notes</h3><p class="detail-notes" data-detail-notes></p></section>
@@ -517,14 +529,6 @@ button { cursor: pointer; }
     </div>
 
     <div class="toast" role="status" aria-live="polite" data-toast></div>
-    <script>
-window.DASHBOARD_CONFIG = {
-  supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
-  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq",
-  emailAlertsEnabled: true
-};
-
-</script>
     <script>
 const config = window.DASHBOARD_CONFIG || {};
 const isConfigured = Boolean(config.supabaseUrl && config.supabaseAnonKey);
@@ -581,6 +585,10 @@ const elements = {
   detailFence: document.querySelector("[data-detail-fence]"),
   detailObstructions: document.querySelector("[data-detail-obstructions]"),
   detailEstimate: document.querySelector("[data-detail-estimate]"),
+  pricingAgreementSection: document.querySelector("[data-pricing-agreement-section]"),
+  detailPricingAgreement: document.querySelector("[data-detail-pricing-agreement]"),
+  detailPricingSignature: document.querySelector("[data-detail-pricing-signature]"),
+  detailPricingAgreedAt: document.querySelector("[data-detail-pricing-agreed-at]"),
   priceSection: document.querySelector("[data-price-section]"),
   detailPrice: document.querySelector("[data-detail-price]"),
   recurrenceSection: document.querySelector("[data-recurrence-section]"),
@@ -1086,7 +1094,17 @@ const openRequest = (id) => {
   elements.detailObstructions.textContent = request.obstruction_count
     ? request.obstruction_count + " - " + (request.obstruction_details || "No details")
     : "None reported";
-  elements.detailEstimate.textContent = request.estimated_price_cents ? formatMoney(request.estimated_price_cents) + " average" : "Not calculated";
+  elements.detailEstimate.textContent = request.estimated_price_cents ? formatMoney(request.estimated_price_cents) + " online price" : "Not calculated";
+  elements.pricingAgreementSection.hidden = !request.pricing_option;
+  if (request.pricing_option) {
+    elements.detailPricingAgreement.textContent = request.pricing_option === "online_estimate"
+      ? "Customer agreed to pay the online price of " + formatMoney(request.agreed_estimate_cents || request.estimated_price_cents) + "."
+      : "Customer agreed to pay the " + formatMoney(request.onsite_estimate_fee_cents || 1000) + " on-site estimate fee, plus the lawn-care price approved before cutting begins.";
+    elements.detailPricingSignature.textContent = request.pricing_signature_name || "Not recorded";
+    elements.detailPricingAgreedAt.textContent = request.pricing_agreed_at
+      ? new Date(request.pricing_agreed_at).toLocaleString()
+      : "Not recorded";
+  }
   elements.detailStatusSelect.value = request.status;
   elements.priceSection.hidden = true;
   elements.recurrenceSection.hidden = true;
@@ -1122,6 +1140,7 @@ const openCustomer = (id, occurrenceDate = null) => {
   elements.detailAddress.textContent = customer.address;
   elements.detailNotes.textContent = customer.notes || "No property notes saved.";
   elements.propertySection.hidden = true;
+  elements.pricingAgreementSection.hidden = true;
   elements.detailPrice.textContent = formatMoney(customer.price_cents);
   elements.detailRecurrence.textContent = customer.recurring && customer.recurrence_start
     ? "Booked every " + (customer.recurrence_weeks || 2) + " weeks starting " + formatDate(customer.recurrence_start) + "."
