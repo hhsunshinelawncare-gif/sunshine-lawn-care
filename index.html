@@ -230,6 +230,18 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
 .estimate-box p { margin: 3px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
 .estimate-box button { flex: none; min-height: 42px; padding: 0 14px; border: 0; border-radius: 6px; color: white; background: var(--forest-800); font-size: 9px; font-weight: 900; letter-spacing: .6px; text-transform: uppercase; }
 .estimate-box.loading { opacity: .65; }
+.pricing-agreement { display: grid; gap: 11px; margin: 0 0 18px; padding: 18px; border: 1px solid #d7e4d8; border-radius: 8px; background: #fff; }
+.pricing-agreement-heading small { color: var(--forest-700); font-size: 9px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+.pricing-agreement-heading h3 { margin: 4px 0 2px; color: var(--forest-950); font-family: Georgia, serif; font-size: 20px; line-height: 1.2; }
+.quote-form .pricing-choice { display: flex; align-items: flex-start; gap: 11px; margin: 0; padding: 13px; border: 1px solid #d9e3da; border-radius: 7px; cursor: pointer; letter-spacing: 0; text-transform: none; }
+.pricing-choice:has(input:checked) { border-color: var(--forest-700); background: #f1f8f1; box-shadow: 0 0 0 1px var(--forest-700); }
+.pricing-choice input, .agreement-check input { width: 17px; height: 17px; margin: 1px 0 0; accent-color: var(--forest-700); }
+.pricing-choice span { display: flex; flex: 1; flex-direction: column; gap: 3px; }
+.pricing-choice strong { color: var(--forest-950); font-size: 12px; }
+.pricing-choice small { color: var(--muted); font-size: 10px; line-height: 1.5; }
+.signature-field { margin-top: 4px; }
+.quote-form .agreement-check { display: flex; align-items: flex-start; gap: 10px; margin: 1px 0 0; color: var(--forest-950); font-size: 11px; font-weight: 700; letter-spacing: 0; line-height: 1.45; text-transform: none; }
+.agreement-note { margin: 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
 .form-trap { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
 .form-button { width: 100%; margin-top: 3px; border-color: var(--forest-950); background: var(--forest-950); color: white; box-shadow: none; }
 .form-button:hover { background: var(--forest-800); }
@@ -321,6 +333,13 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
 }
 
 </style>
+    <script>
+window.REQUEST_CONFIG = {
+  supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
+  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
+};
+
+</script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -346,7 +365,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
           <a href="#services">Services</a>
           <a href="#why-us">Why us</a>
           <a href="#process">How it works</a>
-          <a class="button button-small" href="#quote">Free estimate</a>
+          <a class="button button-small" href="#quote">Get online price</a>
         </nav>
       </div>
     </header>
@@ -362,7 +381,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
               Reliable mowing, crisp edges, clean beds, and the kind of attention that makes home feel even better.
             </p>
             <div class="hero-actions">
-              <a class="button" href="#quote">Get a free estimate</a>
+              <a class="button" href="#quote">Get online price</a>
               <a class="text-link" href="#services">Explore services <span aria-hidden="true">&#8594;</span></a>
             </div>
             <div class="hero-proof" aria-label="Service highlights">
@@ -381,7 +400,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
               <div class="image-shade" aria-hidden="true"></div>
               <div class="image-badge">
                 <span class="badge-check" aria-hidden="true">&#10003;</span>
-                <p><strong>Ready when you are</strong><small>Free, no-pressure estimates</small></p>
+                <p><strong>Ready when you are</strong><small>Online price or at-home estimate</small></p>
               </div>
             </div>
           </div>
@@ -502,7 +521,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
           <div class="quote-copy reveal">
             <p class="eyebrow"><span></span>Let's get growing</p>
             <h2>A better-looking lawn starts <em>right here.</em></h2>
-            <p>Tell us what your property needs and we will follow up with a free estimate.</p>
+            <p>See your online price, or choose a $10 at-home estimate with same-visit cutting.</p>
             <div class="quote-note"><span aria-hidden="true">&#9728;</span><p><strong>No pressure. No guesswork.</strong><small>Just a clear path to a cleaner lawn.</small></p></div>
           </div>
 
@@ -554,9 +573,26 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
               <label>List every obstruction<textarea name="obstructionDetails" maxlength="500" rows="2" placeholder="Example: 2 trees, playset, steep ditch"></textarea></label>
             </div>
             <div class="estimate-box" data-estimate-box>
-              <div><small>Average price calculator</small><strong data-estimate-price>Enter your lawn details</strong><p data-estimate-range>We will show an estimated range before you send the request.</p></div>
-              <button type="button" data-calculate-estimate>Calculate average</button>
+              <div><small>Online price calculator</small><strong data-estimate-price>Enter your lawn details</strong><p data-estimate-range>We will show the online price before you book.</p></div>
+              <button type="button" data-calculate-estimate>Calculate price</button>
             </div>
+            <section class="pricing-agreement" aria-labelledby="pricing-agreement-title">
+              <div class="pricing-agreement-heading">
+                <small>Required before booking</small>
+                <h3 id="pricing-agreement-title">Choose how your price will be handled</h3>
+              </div>
+              <label class="pricing-choice">
+                <input type="radio" name="pricingOption" value="online_estimate" required />
+                <span><strong>Use my online price</strong><small>I agree to pay the exact online price shown above for the lawn details I entered.</small></span>
+              </label>
+              <label class="pricing-choice">
+                <input type="radio" name="pricingOption" value="onsite_estimate" required />
+                <span><strong>Estimate at my house (+$10)</strong><small>I agree to pay a $10 on-site estimate fee, plus the lawn-care price I approve before cutting begins. If I approve the price, Sunshine Lawn Care can cut it during the same visit.</small></span>
+              </label>
+              <label class="signature-field">Type your full name as your signature<input type="text" name="pricingSignature" autocomplete="name" maxlength="160" placeholder="Your full name" required /></label>
+              <label class="agreement-check"><input type="checkbox" name="pricingAgreed" required /><span>I have reviewed my choice and agree to the payment terms above.</span></label>
+              <p class="agreement-note">Your selected price option, signature, and agreement time will be saved with your booking.</p>
+            </section>
             <label>What can we help with?
               <select name="service" required>
                 <option value="" selected disabled>Select a service</option>
@@ -568,7 +604,7 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
             </label>
             <label>Property notes<textarea name="notes" rows="3" placeholder="Tell us a little about your lawn"></textarea></label>
             <label class="form-trap" aria-hidden="true">Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
-            <button class="button form-button" type="submit">Request my free estimate <span aria-hidden="true">&#8594;</span></button>
+            <button class="button form-button" type="submit">Book my morning <span aria-hidden="true">&#8594;</span></button>
             </fieldset>
             <p class="form-status" role="status" aria-live="polite" data-form-status></p>
           </form>
@@ -583,20 +619,13 @@ h2 { font-size: clamp(48px, 5.8vw, 76px); }
           <span class="brand-copy"><strong>Sunshine</strong><small>Lawn Care</small></span>
         </a>
         <p>Mowing &bull; Edging &bull; Trimming &bull; Cleanup</p>
-        <a class="footer-cta" href="#quote">Get a free estimate <span aria-hidden="true">&#8599;</span></a>
+        <a class="footer-cta" href="#quote">Get online price <span aria-hidden="true">&#8599;</span></a>
       </div>
       <div class="shell footer-bottom">
         <p>&copy; <span data-year></span> Sunshine Lawn Care. All rights reserved.</p>
         <p>Fresh lawns. Brighter days.</p>
       </div>
     </footer>
-    <script>
-window.REQUEST_CONFIG = {
-  supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
-  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
-};
-
-</script>
     <script>
 const header = document.querySelector("[data-header]");
 const menuButton = document.querySelector(".menu-toggle");
@@ -650,8 +679,12 @@ const lawnSizeInput = form.querySelector("[name=lawnSizeAcres]");
 const fenceInput = form.querySelector("[name=hasFence]");
 const obstructionInput = form.querySelector("[name=obstructionCount]");
 const obstructionDetailsInput = form.querySelector("[name=obstructionDetails]");
+const pricingOptionInputs = form.querySelectorAll("[name=pricingOption]");
+const pricingSignatureInput = form.querySelector("[name=pricingSignature]");
+const pricingAgreedInput = form.querySelector("[name=pricingAgreed]");
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 let latestEstimateKey = "";
+let latestEstimateCents = null;
 let estimateTimer;
 let availabilityAddress = "";
 
@@ -736,8 +769,13 @@ const loadAvailability = async () => {
 
 const resetEstimate = () => {
   latestEstimateKey = "";
+  latestEstimateCents = null;
   estimatePrice.textContent = "Enter your lawn details";
-  estimateRange.textContent = "We will show an estimated range before you send the request.";
+  estimateRange.textContent = "We will show the online price before you book.";
+};
+
+const clearPricingSignoff = () => {
+  pricingAgreedInput.checked = false;
 };
 
 const calculateEstimate = async (showPrompt = true) => {
@@ -747,7 +785,7 @@ const calculateEstimate = async (showPrompt = true) => {
   if (!Number.isFinite(lawnSizeAcres) || lawnSizeAcres < 0.01 || hasFence === "") {
     if (showPrompt) {
       estimatePrice.textContent = "Add lawn size and fence details";
-      estimateRange.textContent = "Those details are needed to calculate an average.";
+      estimateRange.textContent = "Those details are needed to calculate the online price.";
     }
     return null;
   }
@@ -774,16 +812,19 @@ const calculateEstimate = async (showPrompt = true) => {
     if (!rows.length) throw new Error("Estimate is unavailable");
     const result = rows[0];
     latestEstimateKey = estimateKey();
-    estimatePrice.textContent = "Average: " + money.format(result.average_price_cents / 100);
-    estimateRange.textContent = "Typical range: " + money.format(result.low_price_cents / 100) + " - " + money.format(result.high_price_cents / 100) + ". Final price follows property review.";
+    latestEstimateCents = Number(result.average_price_cents);
+    estimatePrice.textContent = "Online price: " + money.format(result.average_price_cents / 100);
+    estimateRange.textContent = "This is the exact online price you may accept below for the lawn details entered.";
     return result;
   } catch (error) {
+    latestEstimateKey = "";
+    latestEstimateCents = null;
     estimatePrice.textContent = "Estimate temporarily unavailable";
-    estimateRange.textContent = "You can still send the request and we will review it personally.";
+    estimateRange.textContent = "Choose the $10 on-site estimate option below if you would still like to book.";
     return null;
   } finally {
     calculateEstimateButton.disabled = false;
-    calculateEstimateButton.textContent = "Calculate average";
+    calculateEstimateButton.textContent = "Calculate price";
     estimateBox.classList.remove("loading");
   }
 };
@@ -796,10 +837,13 @@ addressInput.addEventListener("input", () => {
 [lawnSizeInput, fenceInput, obstructionInput].forEach((field) => {
   field.addEventListener("change", () => {
     syncObstructionRequirement();
+    clearPricingSignoff();
     clearTimeout(estimateTimer);
     estimateTimer = setTimeout(() => calculateEstimate(false), 250);
   });
 });
+pricingOptionInputs.forEach((field) => field.addEventListener("change", clearPricingSignoff));
+pricingSignatureInput.addEventListener("input", clearPricingSignoff);
 syncObstructionRequirement();
 resetAvailability();
 
@@ -811,6 +855,20 @@ form.addEventListener("submit", async (event) => {
     return;
   }
   if (form.elements.website.value) return;
+
+  const data = new FormData(form);
+  const pricingOption = String(data.get("pricingOption"));
+  if (!data.get("pricingAgreed") || !String(data.get("pricingSignature")).trim()) {
+    formStatus.textContent = "Please sign and check the pricing agreement before booking.";
+    return;
+  }
+  if (pricingOption === "online_estimate" && latestEstimateKey !== estimateKey()) {
+    const estimate = await calculateEstimate(true);
+    if (!estimate) {
+      formStatus.textContent = "Calculate the online price, or choose the $10 on-site estimate option.";
+      return;
+    }
+  }
 
   const submitButton = form.querySelector("button[type=submit]");
   const originalLabel = submitButton.innerHTML;
@@ -825,8 +883,6 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
-  const data = new FormData(form);
-  if (latestEstimateKey !== estimateKey()) await calculateEstimate(false);
   const request = {
     first_name: String(data.get("firstName")).trim(),
     last_name: String(data.get("lastName")).trim(),
@@ -840,7 +896,11 @@ form.addEventListener("submit", async (event) => {
     requested_date: String(data.get("requestedDate")),
     preferred_time: "Morning",
     service: String(data.get("service")),
-    notes: String(data.get("notes")).trim()
+    notes: String(data.get("notes")).trim(),
+    pricing_option: pricingOption,
+    pricing_agreed: true,
+    pricing_signature_name: String(data.get("pricingSignature")).trim(),
+    agreed_estimate_cents: pricingOption === "online_estimate" ? latestEstimateCents : null
   };
 
   try {
@@ -863,12 +923,19 @@ form.addEventListener("submit", async (event) => {
     resetAvailability();
     syncObstructionRequirement();
     resetEstimate();
-    formStatus.textContent = "Thank you! Your request is on our calendar for review.";
+    formStatus.textContent = "Thank you! Your signed booking is on our calendar for review.";
   } catch (error) {
     const schedulingConflict = /Sunday|unavailable|eight-job limit/i.test(error.message);
+    const estimateChanged = /estimate changed/i.test(error.message);
     formStatus.textContent = schedulingConflict
       ? "That morning is no longer available. Check the address again to choose another date."
-      : "We could not send your request. Please try again.";
+      : estimateChanged
+        ? "The online price changed. Please calculate it again and review the agreement."
+        : "We could not send your request. Please try again.";
+    if (estimateChanged) {
+      resetEstimate();
+      clearPricingSignoff();
+    }
     if (schedulingConflict) resetAvailability();
   } finally {
     submitButton.disabled = false;
