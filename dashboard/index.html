@@ -147,6 +147,14 @@ button { cursor: pointer; }
 .scheduling-toolbar h2 { margin: 0; font-family: Georgia, serif; font-size: 24px; }
 .scheduling-toolbar > div > p:last-child { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
 .scheduling-content { padding: 24px 25px 27px; }
+.notification-settings { display: grid; grid-template-columns: minmax(240px, 1fr) auto minmax(220px, .8fr); gap: 18px; align-items: center; margin-bottom: 20px; padding: 17px 18px; border: 1px solid #d8e5da; border-radius: 9px; background: #f1f8f2; }
+.notification-settings > div { display: flex; align-items: center; gap: 11px; }
+.notification-icon { width: 34px; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; color: var(--green-950); background: var(--sun); font-family: Georgia, serif; font-size: 18px; font-weight: 900; }
+.notification-settings p { display: flex; min-width: 0; flex-direction: column; margin: 0; }
+.notification-settings strong { font-size: 11px; }
+.notification-settings small, .notification-settings span { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.notification-settings .secondary-button { min-height: 42px; padding-inline: 16px; }
+.email-alert-status { padding-left: 18px; border-left: 1px solid #d4dfd5; }
 .block-date-form { display: grid; grid-template-columns: minmax(170px, .7fr) minmax(250px, 1.3fr) auto; gap: 12px; align-items: end; }
 .block-date-form label { display: grid; gap: 7px; color: #536158; font-size: 9px; font-weight: 850; letter-spacing: .55px; text-transform: uppercase; }
 .block-date-form input { width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); background: white; outline: none; font-size: 13px; }
@@ -283,6 +291,8 @@ button { cursor: pointer; }
   .pricing-preview { grid-template-columns: 1fr; }
   .pricing-example-fields { grid-template-columns: 1fr 1fr; }
   .pricing-example-fields .compact-check { align-self: end; }
+  .notification-settings { grid-template-columns: 1fr; }
+  .email-alert-status { padding: 12px 0 0; border-top: 1px solid #d4dfd5; border-left: 0; }
   .block-date-form { grid-template-columns: 1fr; }
   .modal-actions { flex-wrap: wrap; }
   .modal-spacer { display: none; }
@@ -406,6 +416,14 @@ button { cursor: pointer; }
             <div><p class="eyebrow">Booking controls</p><h2>Availability</h2><p>Jobs are morning-only, Sundays are closed, and each day is limited to eight bookings.</p></div>
           </header>
           <div class="scheduling-content">
+            <div class="notification-settings">
+              <div>
+                <span class="notification-icon" aria-hidden="true">!</span>
+                <p><strong>New booking alerts</strong><small data-device-notification-status>Device alerts are not enabled yet.</small></p>
+              </div>
+              <button class="secondary-button" type="button" data-enable-device-notifications>Enable device alerts</button>
+              <p class="email-alert-status"><strong>Email alerts</strong><span data-email-alert-status>Secure email delivery is being connected.</span></p>
+            </div>
             <form class="block-date-form" data-block-date-form>
               <label>Make a date unavailable<input type="date" name="serviceDate" required /></label>
               <label>Reason (optional)<input type="text" name="reason" maxlength="160" placeholder="Vacation, weather, holiday..." /></label>
@@ -502,7 +520,8 @@ button { cursor: pointer; }
     <script>
 window.DASHBOARD_CONFIG = {
   supabaseUrl: "https://krwciwpbdnnilornpfyb.supabase.co",
-  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq"
+  supabaseAnonKey: "sb_publishable_IgUTS9_r1v27pXIAPIE_3A_K-6J6tLq",
+  emailAlertsEnabled: true
 };
 
 </script>
@@ -529,6 +548,9 @@ const elements = {
   blockDateForm: document.querySelector("[data-block-date-form]"),
   blockDateMessage: document.querySelector("[data-block-date-message]"),
   blockedDateList: document.querySelector("[data-blocked-date-list]"),
+  enableDeviceNotifications: document.querySelector("[data-enable-device-notifications]"),
+  deviceNotificationStatus: document.querySelector("[data-device-notification-status]"),
+  emailAlertStatus: document.querySelector("[data-email-alert-status]"),
   search: document.querySelector("[data-search]"),
   statusFilter: document.querySelector("[data-status-filter]"),
   newBadge: document.querySelector("[data-new-badge]"),
@@ -594,10 +616,15 @@ const state = {
   selectedType: null,
   selectedDate: null,
   accessToken: sessionStorage.getItem("sunshine_access_token") || "",
+  latestRequestCreatedAt: sessionStorage.getItem("sunshine_latest_booking_seen") || "",
   demoMode: false,
   filter: "all",
   query: ""
 };
+
+let bookingNotificationTimer = null;
+let bookingNotificationCheckRunning = false;
+const latestBookingStorageKey = "sunshine_latest_booking_seen";
 
 const inviteParams = new URLSearchParams(window.location.hash.slice(1));
 const inviteToken = inviteParams.get("access_token") || "";
@@ -635,6 +662,7 @@ const apiHeaders = (authenticated = true) => {
 };
 
 const showLogin = () => {
+  stopBookingNotifications();
   elements.loading.hidden = true;
   elements.app.hidden = true;
   elements.login.hidden = false;
@@ -661,6 +689,7 @@ const showApp = (email = "Owner") => {
   elements.ownerName.textContent = localName || "Owner";
   elements.ownerInitials.textContent = (localName || "HH").slice(0, 2).toUpperCase();
   render();
+  startBookingNotifications();
 };
 
 const verifySession = async () => {
@@ -694,6 +723,13 @@ const loadData = async () => {
   const pricingRows = await responses[2].json();
   state.pricing = pricingRows[0] || null;
   state.blockedDates = await responses[3].json();
+  const newestRequest = state.requests.reduce((latest, request) => (
+    !latest || request.created_at > latest ? request.created_at : latest
+  ), "");
+  if (!state.latestRequestCreatedAt && newestRequest) {
+    state.latestRequestCreatedAt = newestRequest;
+    sessionStorage.setItem(latestBookingStorageKey, newestRequest);
+  }
 };
 
 const legacyFilteredRequests = () => state.requests.filter((request) => {
@@ -1116,6 +1152,101 @@ const showToast = (message) => {
   toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 2600);
 };
 
+const syncDeviceNotificationStatus = () => {
+  elements.emailAlertStatus.textContent = config.emailAlertsEnabled
+    ? "Email alerts are active for every new booking."
+    : "Secure email delivery is being connected.";
+  if (!("Notification" in window)) {
+    elements.deviceNotificationStatus.textContent = "This browser does not support device alerts.";
+    elements.enableDeviceNotifications.textContent = "Not supported";
+    elements.enableDeviceNotifications.disabled = true;
+    return;
+  }
+  if (Notification.permission === "granted") {
+    elements.deviceNotificationStatus.textContent = "Device alerts are active while this dashboard is open.";
+    elements.enableDeviceNotifications.textContent = "Device alerts on";
+    elements.enableDeviceNotifications.disabled = true;
+    return;
+  }
+  if (Notification.permission === "denied") {
+    elements.deviceNotificationStatus.textContent = "Alerts are blocked in this browser's site settings.";
+    elements.enableDeviceNotifications.textContent = "Alerts blocked";
+    elements.enableDeviceNotifications.disabled = true;
+    return;
+  }
+  elements.deviceNotificationStatus.textContent = "Enable alerts to be notified when a new booking arrives.";
+  elements.enableDeviceNotifications.textContent = "Enable device alerts";
+  elements.enableDeviceNotifications.disabled = false;
+};
+
+const enableDeviceNotifications = async () => {
+  if (!("Notification" in window)) return;
+  elements.enableDeviceNotifications.disabled = true;
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      new Notification("Sunshine booking alerts are on", {
+        body: "New booking requests will appear here while the private dashboard is open.",
+        tag: "sunshine-alerts-enabled"
+      });
+      showToast("Device booking alerts enabled");
+    }
+  } finally {
+    syncDeviceNotificationStatus();
+  }
+};
+
+const sendDeviceBookingNotification = (request) => {
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+  const notification = new Notification("New Sunshine Lawn Care booking", {
+    body: "Morning service requested for " + formatDate(request.requested_date) + ".",
+    tag: "sunshine-booking-" + request.id
+  });
+  notification.onclick = () => {
+    window.focus();
+    openRequest(request.id);
+    notification.close();
+  };
+};
+
+const checkForNewBookings = async () => {
+  if (bookingNotificationCheckRunning || state.demoMode || !state.accessToken || !state.latestRequestCreatedAt) return;
+  bookingNotificationCheckRunning = true;
+  try {
+    const params = new URLSearchParams({
+      select: "*",
+      created_at: "gt." + state.latestRequestCreatedAt,
+      order: "created_at.asc"
+    });
+    const response = await fetch(config.supabaseUrl + "/rest/v1/service_requests?" + params.toString(), { headers: apiHeaders() });
+    if (!response.ok) return;
+    const newRequests = await response.json();
+    if (!newRequests.length) return;
+    newRequests.forEach((request) => {
+      if (!state.requests.some((existing) => existing.id === request.id)) state.requests.push(request);
+      sendDeviceBookingNotification(request);
+    });
+    state.latestRequestCreatedAt = newRequests[newRequests.length - 1].created_at;
+    sessionStorage.setItem(latestBookingStorageKey, state.latestRequestCreatedAt);
+    state.requests.sort((left, right) => left.requested_date.localeCompare(right.requested_date) || left.created_at.localeCompare(right.created_at));
+    render();
+    showToast(newRequests.length === 1 ? "New booking received" : newRequests.length + " new bookings received");
+  } finally {
+    bookingNotificationCheckRunning = false;
+  }
+};
+
+const startBookingNotifications = () => {
+  clearInterval(bookingNotificationTimer);
+  syncDeviceNotificationStatus();
+  if (!state.demoMode) bookingNotificationTimer = setInterval(checkForNewBookings, 30000);
+};
+
+const stopBookingNotifications = () => {
+  clearInterval(bookingNotificationTimer);
+  bookingNotificationTimer = null;
+};
+
 const customerFormField = (name) => elements.customerForm.elements.namedItem(name);
 
 const openCustomerModal = (customer = null, sourceRequest = null) => {
@@ -1515,7 +1646,9 @@ elements.logout.addEventListener("click", async () => {
     await fetch(`${config.supabaseUrl}/auth/v1/logout`, { method: "POST", headers: apiHeaders() }).catch(() => {});
   }
   sessionStorage.removeItem("sunshine_access_token");
+  sessionStorage.removeItem(latestBookingStorageKey);
   state.accessToken = "";
+  state.latestRequestCreatedAt = "";
   state.demoMode = false;
   state.requests = [];
   state.customers = [];
@@ -1560,6 +1693,7 @@ elements.editCustomer.addEventListener("click", () => {
 elements.closeCustomerModal.addEventListener("click", closeCustomerModal);
 elements.cancelCustomer.addEventListener("click", closeCustomerModal);
 elements.removeCustomer.addEventListener("click", removeSavedCustomer);
+elements.enableDeviceNotifications.addEventListener("click", enableDeviceNotifications);
 elements.deleteCalendarEntryButtons.forEach((button) => button.addEventListener("click", deleteSelectedCalendarEntry));
 elements.blockDateForm.addEventListener("submit", blockServiceDate);
 elements.blockedDateList.addEventListener("click", (event) => {
