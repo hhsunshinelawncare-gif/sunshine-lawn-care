@@ -484,7 +484,7 @@ window.DASHBOARD_CONFIG = {
           <section class="detail-section"><h3>When</h3><div class="detail-highlight"><span class="detail-date-icon">&#9638;</span><p><strong data-detail-date></strong><small data-detail-time></small></p></div></section>
           <section class="detail-section"><h3>Customer</h3><dl><div><dt>Name</dt><dd data-detail-name></dd></div><div><dt>Phone</dt><dd><a data-detail-phone></a></dd></div><div><dt>Email</dt><dd><a data-detail-email></a></dd></div><div><dt>Address</dt><dd data-detail-address></dd></div></dl></section>
           <section class="detail-section" data-property-section hidden><h3>Lawn details</h3><dl><div><dt>Size</dt><dd data-detail-lawn-size></dd></div><div><dt>Fence</dt><dd data-detail-fence></dd></div><div><dt>Obstacles</dt><dd data-detail-obstructions></dd></div><div><dt>Estimate</dt><dd data-detail-estimate></dd></div></dl></section>
-          <section class="detail-section agreement-detail" data-pricing-agreement-section hidden><h3>Customer price agreement</h3><p class="agreement-summary" data-detail-pricing-agreement></p><dl><div><dt>Signed by</dt><dd data-detail-pricing-signature></dd></div><div><dt>Agreed</dt><dd data-detail-pricing-agreed-at></dd></div></dl></section>
+          <section class="detail-section agreement-detail" data-pricing-agreement-section hidden><h3>Customer price agreement</h3><p class="agreement-summary" data-detail-pricing-agreement></p><dl><div><dt>Payment</dt><dd data-detail-payment-method></dd></div><div><dt>Signed by</dt><dd data-detail-pricing-signature></dd></div><div><dt>Agreed</dt><dd data-detail-pricing-agreed-at></dd></div></dl></section>
           <section class="detail-section" data-price-section hidden><h3>Lawn price</h3><p class="detail-price" data-detail-price>$0.00</p></section>
           <section class="detail-section" data-recurrence-section hidden><h3>Schedule</h3><p class="detail-recurrence" data-detail-recurrence></p></section>
           <section class="detail-section"><h3>Property notes</h3><p class="detail-notes" data-detail-notes></p></section>
@@ -587,6 +587,7 @@ const elements = {
   detailEstimate: document.querySelector("[data-detail-estimate]"),
   pricingAgreementSection: document.querySelector("[data-pricing-agreement-section]"),
   detailPricingAgreement: document.querySelector("[data-detail-pricing-agreement]"),
+  detailPaymentMethod: document.querySelector("[data-detail-payment-method]"),
   detailPricingSignature: document.querySelector("[data-detail-pricing-signature]"),
   detailPricingAgreedAt: document.querySelector("[data-detail-pricing-agreed-at]"),
   priceSection: document.querySelector("[data-price-section]"),
@@ -1100,6 +1101,7 @@ const openRequest = (id) => {
     elements.detailPricingAgreement.textContent = request.pricing_option === "online_estimate"
       ? "Customer agreed to pay the online price of " + formatMoney(request.agreed_estimate_cents || request.estimated_price_cents) + "."
       : "Customer agreed to pay the " + formatMoney(request.onsite_estimate_fee_cents || 1000) + " on-site estimate fee, plus the lawn-care price approved before cutting begins.";
+    elements.detailPaymentMethod.textContent = request.payment_method || "Not recorded on this older booking";
     elements.detailPricingSignature.textContent = request.pricing_signature_name || "Not recorded";
     elements.detailPricingAgreedAt.textContent = request.pricing_agreed_at
       ? new Date(request.pricing_agreed_at).toLocaleString()
